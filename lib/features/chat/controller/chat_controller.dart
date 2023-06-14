@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_ui/common/enums/message_enum.dart';
@@ -36,7 +35,10 @@ class ChatController {
   }
 
   void sentTextMessage(BuildContext context, String text, String receiverUserId,
-      bool isGroupChat) {
+      bool isGroupChat) async {
+    print("123456789");
+    print(text);
+
     ref.read(userdataProvider).whenData((value) =>
         chatRepository.sentTextMessage(
             isGroupChat: isGroupChat,
@@ -44,6 +46,7 @@ class ChatController {
             text: text,
             receiverUserId: receiverUserId,
             sendUser: value!));
+    print(text);
   }
 
   void sentFileMessage(BuildContext context, File file, String receiverUserId,
@@ -62,5 +65,9 @@ class ChatController {
   void setChatMessageSeen(
       BuildContext context, String receiverUserid, String messageId) {
     chatRepository.setMessageSeen(context, receiverUserid, messageId);
+  }
+
+  Stream<List<Message>> getLastMessage(String receiverUserid) {
+    return chatRepository.getlastMessage(receiverUserid);
   }
 }

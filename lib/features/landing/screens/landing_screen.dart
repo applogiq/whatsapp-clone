@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:whatsapp_ui/common/widgets/custom_button.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:whatsapp_ui/features/auth/screens/login_screen.dart';
 
-class LandingScreen extends StatelessWidget {
+class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
+
+  @override
+  State<LandingScreen> createState() => _LandingScreenState();
+}
+
+class _LandingScreenState extends State<LandingScreen> {
   void navigateToLoginScreen(BuildContext ctx) {
     Navigator.pushNamed(ctx, LoginScreen.routeName);
   }
@@ -13,43 +19,138 @@ class LandingScreen extends StatelessWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 50),
-            const Text(
-              'Welcome to Applogiq',
-              style: TextStyle(
-                fontSize: 33,
-                fontWeight: FontWeight.w600,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.asset(
+                'assets/landing_page.jpg',
+                width: size.width * 1,
+                // color: Colors.blue,
               ),
-            ),
-            SizedBox(height: size.height / 9),
-            Image.asset(
-              'assets/bg.png',
-              height: 340,
-              width: 340,
-              color: Colors.blue,
-            ),
-            SizedBox(height: size.height / 9),
-            const Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Text(
-                'Read our Privacy Policy. Tap "Agree and continue" to accept the Terms of Service.',
-                style: TextStyle(color: Colors.white),
-                textAlign: TextAlign.center,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Share photos and',
+                        style: GoogleFonts.manrope(
+                          textStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 29,
+                              fontWeight: FontWeight.w800),
+                        )),
+                    Row(
+                      children: [
+                        Text('videos,',
+                            style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 29,
+                                  fontWeight: FontWeight.w800),
+                            )),
+                        Text('Stay connected',
+                            style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  color: Color.fromRGBO(237, 84, 60, 1),
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800),
+                            )),
+                      ],
+                    ),
+                    Text('wherever you go',
+                        style: GoogleFonts.manrope(
+                          textStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800),
+                        )),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          'Read our',
+                          style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(5, 31, 50, 0.6))),
+                        ),
+                        Text(
+                          ' privacy policy. ',
+                          style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(58, 97, 234, 1))),
+                        ),
+                        Text(
+                          'By clicking continue',
+                          style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(5, 31, 50, 0.6))),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          'you are agreeing to our',
+                          style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(5, 31, 50, 0.6))),
+                        ),
+                        Text(
+                          ' terms of service.',
+                          style: GoogleFonts.manrope(
+                              textStyle: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(58, 97, 234, 1))),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 45),
+                    InkWell(
+                      onTap: () => navigateToLoginScreen(context),
+                      child: Container(
+                        height: 54,
+                        width: double.maxFinite,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(41),
+                            color: const Color.fromRGBO(237, 84, 60, 1)),
+                        child: Center(
+                          child: Text('Get Started',
+                              style: GoogleFonts.manrope(
+                                textStyle: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                              )),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: size.width * 0.75,
-              child: CustomButton(
-                text: 'AGREE AND CONTINUE',
-                onPressed: () => navigateToLoginScreen(context),
-              ),
-            ),
-          ],
+
+              // SizedBox(
+              //   width: size.width * 0.75,
+              //   child: CustomButton(
+              //     text: 'Get Started',
+              //     onPressed: () => navigateToLoginScreen(context),
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     );

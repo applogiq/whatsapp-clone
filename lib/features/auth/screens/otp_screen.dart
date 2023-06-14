@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:whatsapp_ui/colors.dart';
+import 'package:whatsapp_ui/common/config/text_style.dart';
+import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
 // import 'package:whatsapp_ui/common/utils/colors.dart';
 // import 'package:whatsapp_ui/features/auth/controller/auth_controller.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
+import 'package:whatsapp_ui/features/auth/widgets/otp_field.dart';
 
 class OTPScreen extends ConsumerWidget {
   static const String routeName = '/otp-screen';
   final String verificationId;
+  final String phoneNumber;
 
   const OTPScreen({
     Key? key,
     required this.verificationId,
+    required this.phoneNumber,
   }) : super(key: key);
 
   void verifyOTP(WidgetRef ref, BuildContext context, String userOTP) {
@@ -30,33 +34,43 @@ class OTPScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Verifying your number'),
+        title: const Text(''),
         elevation: 0,
-        backgroundColor: backgroundColor,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            const Text('We have sent an SMS with a code.'),
-            SizedBox(
-              width: size.width * 0.5,
-              child: TextField(
-                textAlign: TextAlign.center,
-                decoration: const InputDecoration(
-                  hintText: '- - - - - -',
-                  hintStyle: TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (val) {
-                  if (val.length == 6) {
-                    verifyOTP(ref, context, val.trim());
-                  }
-                },
-              ),
+            Text(
+              "Enter your OTP",
+              style: authScreenheadingStyle(),
             ),
+            const VerticalBox(height: 16),
+            Row(
+              children: [
+                Text(
+                  "The OTP has been sent to",
+                  style: authScreensubTitleStyle(),
+                ),
+                Text(
+                  "    $phoneNumber",
+                  style: authScreensubTitleStyle().copyWith(
+                      color: const Color.fromRGBO(237, 84, 60, 1),
+                      fontSize: 14),
+                ),
+              ],
+            ),
+            const VerticalBox(height: 24),
+            Text(
+              "Enter OTP",
+              style: authScreensubTitleStyle(),
+            ),
+            const VerticalBox(height: 4),
+            OTPField(
+              verificationId: verificationId,
+            ),
+            const VerticalBox(height: 24),
           ],
         ),
       ),

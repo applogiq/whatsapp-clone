@@ -78,79 +78,70 @@ class GroupContactsScreens extends ConsumerWidget {
               ],
             ),
             StreamBuilder<List<model.Group>>(
-                stream: ref.watch(chatControllerProvider).chatGroups(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Loader();
+              stream: ref.watch(chatControllerProvider).chatGroups(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Loader();
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text("Error occurred"),
+                  );
+                } else {
+                  if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                    return Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: snapshot.data![0].membersUid.length,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var groupData = snapshot.data![0];
+                          if (index >= groupData.membersUid.length) {
+                            return const SizedBox(); // Skip rendering if index is out of range
+                          }
+                          var memberUid = groupData.membersUid[index];
+
+                          return StreamBuilder<
+                              DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: fireStore
+                                .collection('users')
+                                .doc(memberUid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Loader();
+                              } else if (snapshot.hasData &&
+                                  snapshot.data != null) {
+                                var name = snapshot.data!.data()!['name'];
+                                var profilePicture =
+                                    snapshot.data!.data()!['profilePic'];
+
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(profilePicture),
+                                  ),
+                                  title: Text(name),
+                                );
+                              } else if (snapshot.hasError) {
+                                return const Text("Error occurred");
+                              } else {
+                                return const CircularProgressIndicator();
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    );
                   } else {
-                    if (snapshot.hasData) {
-                      return Expanded(
-                          child: ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              physics: const BouncingScrollPhysics(),
-                              itemCount:
-                                  snapshot.data![membersId].membersUid.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                var groupData = snapshot.data![membersId];
-                                return
-                                    // ListTile(
-                                    //   leading: const CircleAvatar(
-                                    //       // backgroundImage: NetworkImage(url),
-                                    //       ),
-                                    //   title: Text(memberList[index]),
-                                    // );
-
-                                    StreamBuilder(
-                                        stream: fireStore
-                                            .collection('users')
-                                            .doc(groupData.membersUid[index])
-                                            .snapshots(),
-                                        builder: (context, snapshot) {
-                                          var name = snapshot.data!
-                                              as DocumentSnapshot;
-
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const Loader();
-                                          } else if (snapshot.hasData) {
-                                            print("1");
-                                            if (snapshot.data != null) {
-                                              print("2");
-
-                                              return ListTile(
-                                                leading: const CircleAvatar(
-                                                    // backgroundImage: NetworkImage(url),
-                                                    ),
-                                                title: Text(name['name']!),
-                                              );
-                                            } else {
-                                              print("3");
-
-                                              return const CircularProgressIndicator();
-                                            }
-                                          } else if (snapshot.hasError) {
-                                            print("4");
-
-                                            return const Text("data");
-                                          } else {
-                                            print("5");
-
-                                            return const CircularProgressIndicator();
-                                          }
-                                        });
-                              }));
-                    } else if (snapshot.hasError) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
                   }
-                })
+                }
+              },
+            ),
           ],
         ),
       ),

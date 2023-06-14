@@ -6,6 +6,7 @@ class UserModel {
   final String phoneNumber;
   final List<String> groupId;
   final String lastSeen;
+  final String deviceToken;
   UserModel({
     required this.name,
     required this.uid,
@@ -14,6 +15,7 @@ class UserModel {
     required this.phoneNumber,
     required this.groupId,
     required this.lastSeen,
+    required this.deviceToken,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +27,7 @@ class UserModel {
       'phoneNumber': phoneNumber,
       'groupId': groupId,
       'lastSeen': lastSeen,
+      'deviceToken': deviceToken,
     };
   }
 
@@ -37,6 +40,7 @@ class UserModel {
       phoneNumber: map['phoneNumber'] ?? '',
       groupId: List<String>.from(map['groupId']),
       lastSeen: map['lastSeen'] ?? '',
+      deviceToken: map['deviceToken'] ?? '',
     );
   }
 }

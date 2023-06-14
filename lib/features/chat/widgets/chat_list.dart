@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_ui/model/message_model.dart';
@@ -82,22 +84,23 @@ class _ChatListState extends ConsumerState<ChatList> {
           return Column(
             children: [
               // if (isTodayOrYesterday)
-              Container(
-                // padding: const EdgeInsets.all(8.0),
-                color: Colors.blue,
-                child: Text(
-                  conversationStartLabel,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              // Container(
+              //   // padding: const EdgeInsets.all(8.0),
+              //   color: Colors.blue,
+              //   child: Text(
+              //     conversationStartLabel,
+              //     style: const TextStyle(
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
               Expanded(
                 child: ListView.builder(
                   controller: messageController,
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     final messageData = snapshot.data![index];
+
                     var timeSent = DateFormat.Hm().format(messageData.timeSent);
                     if (!messageData.isSeen &&
                         messageData.recieverid ==
@@ -115,11 +118,51 @@ class _ChatListState extends ConsumerState<ChatList> {
                           type: messageData.type,
                           isSeen: messageData.isSeen);
                     }
-                    return SenderMessageCard(
-                      message: messageData.text,
-                      date: timeSent,
-                      type: messageData.type,
-                    );
+
+                    return widget.isGroupChat
+                        ? SenderMessageCard(
+                            nameWidget:
+                                // const SizedBox.shrink(),
+                                StreamBuilder<
+                                    DocumentSnapshot<Map<String, dynamic>>>(
+                              stream: FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(messageData.senderId)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Text('');
+                                }
+                                if (!snapshot.hasData ||
+                                    snapshot.data == null) {
+                                  return const Text(
+                                      ''); // or display a message indicating no contacts
+                                }
+                                var data = snapshot.data!
+                                    .data(); // Access the snapshot data using the data() method
+                                if (data == null) {
+                                  return const Text('');
+                                  // or handle the case when data is null
+                                }
+                                return Text(
+                                  data['name'].toString(),
+                                  style: authScreensubTitleStyle().copyWith(
+                                      color:
+                                          const Color.fromRGBO(236, 61, 23, 1)),
+                                );
+                              },
+                            ),
+                            message: messageData.text,
+                            date: timeSent,
+                            type: messageData.type,
+                          )
+                        : SenderMessageCard(
+                            nameWidget: const SizedBox.shrink(),
+                            message: messageData.text,
+                            date: timeSent,
+                            type: messageData.type,
+                          );
                   },
                 ),
               ),

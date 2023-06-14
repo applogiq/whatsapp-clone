@@ -38,20 +38,11 @@ class SelectContactRepository {
           ' ',
           '',
         );
-        // print(userdata.name);
-        // print(userdata.uid);
+        //  print(selectedContacts.photo);
+        print(userdata.profilePic);
         if (selectedPhoneNum == userdata.phoneNumber) {
           print("123456");
           isfound = true;
-          // Navigator.pushNamed(
-          //   context,
-          //   MobileChatScreen.routeName,
-          //   arguments: {
-          //     'name': userdata.name,
-          //     'uid': userdata.uid,
-          //     'isGroupChat': false,
-          //   },
-          // );
 
           Navigator.push(
               context,
@@ -60,8 +51,7 @@ class SelectContactRepository {
                       isGroupChat: false,
                       name: userdata.name,
                       uid: userdata.uid,
-                      profileImage:
-                          'https://firebasestorage.googleapis.com/v0/b/chat-app-firebase-4d363.appspot.com/o/group%2Fd1a87890-fabf-11ed-abd2-5ba78cc0f964?alt=media&token=0abe0ff3-c2bb-4497-972d-eae1132c0ffd')));
+                      profileImage: userdata.profilePic)));
         }
       }
       if (!isfound) {

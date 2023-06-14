@@ -17,13 +17,15 @@ class SelectContactsGroups extends ConsumerStatefulWidget {
 class _SelectContactsGroupsState extends ConsumerState<SelectContactsGroups> {
   List<int> selectContacts = [];
   void selectContact(int index, Contact contact) {
-    if (selectContacts.contains(index)) {
-      print(selectContacts.contains(index));
-      selectContacts.removeAt(index);
-    } else {
-      selectContacts.add(index);
-    }
-    setState(() {});
+    setState(() {
+      if (selectContacts.contains(index)) {
+        print(selectContacts.contains(index));
+        selectContacts.removeAt(index);
+      } else {
+        selectContacts.add(index);
+      }
+    });
+
     ref
         .read(selectedContactGroups.notifier)
         .update((state) => [...state, contact]);

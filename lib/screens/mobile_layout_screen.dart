@@ -1,15 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:whatsapp_ui/colors.dart';
-import 'package:whatsapp_ui/common/widgets/error.dart';
+import 'package:whatsapp_ui/common/config/text_style.dart';
+import 'package:whatsapp_ui/common/widgets/box/horizontal_box.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
 import 'package:whatsapp_ui/features/auth/screens/profile_screen.dart';
-import 'package:whatsapp_ui/features/group/screens/create_group_screen.dart';
+import 'package:whatsapp_ui/features/group/screens/select_group_contacts.dart';
 import 'package:whatsapp_ui/features/select_contact/screens/select_contacts_screens.dart';
 import 'package:whatsapp_ui/screens/state_chageNotifier.dart';
 import 'package:whatsapp_ui/widgets/contacts_list.dart';
+import 'package:whatsapp_ui/widgets/custom_color_container.dart';
 
 class MobileLayoutScreen extends ConsumerStatefulWidget {
   const MobileLayoutScreen({Key? key}) : super(key: key);
@@ -23,6 +27,8 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   void initState() {
     super.initState();
+    ref.read(authControllerProvider).setuserState(true);
+
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -39,9 +45,6 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     String period = DateFormat('a').format(now);
     String result = 'Last seen $formattedDate $formattedTime ';
 
-    // print(" rsm$now");
-
-    // final String lastSeen = formatDate(now);
     return result;
   }
 
@@ -66,89 +69,53 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   Widget build(BuildContext context) {
     var todos = ref.watch(totoProvider).isShow;
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: appBarColor,
-          centerTitle: false,
-          title: const Text(
-            'Applogiq',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(todos ? Icons.search : Icons.abc, color: Colors.grey),
-              onPressed: () {
-                ref.read(totoProvider).isShowButton();
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        centerTitle: false,
+        title: Text('Applogiq', style: authScreenheadingStyle()),
+        actions: [
+          SizedBox(
+            height: 30,
+            width: 30,
+            child: InkWell(
+              onTap: () {
+                // Navigator.pushNamed(context, CreateGroupScreen.routeName);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const SelectGroupContactsScreen()));
               },
+              child: Image.asset(
+                'assets/create_group.png',
+              ),
             ),
-            PopupMenuButton(
-                itemBuilder: (context) => [
-                      PopupMenuItem(
-                        child: const Text("Create Group"),
-                        onTap: () => Future(
-                          () => Navigator.pushNamed(
-                              context, CreateGroupScreen.routeName),
-                        ),
-                      )
-                    ]),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfileScreen()));
-                  },
-                  child: const ProfilePic()),
-            )
-          ],
-          bottom: const TabBar(
-            indicatorColor: Colors.blue,
-            indicatorWeight: 4,
-            labelColor: Colors.blue,
-            unselectedLabelColor: Colors.grey,
-            labelStyle: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-            tabs: [
-              Tab(
-                text: 'CHATS',
-              ),
-              Tab(
-                text: 'STATUS',
-              ),
-              Tab(
-                text: 'CALLS',
-              ),
-            ],
           ),
-        ),
-        body: const TabBarView(children: [
-          ContactsList(),
-          Center(
-            child: Text("Status"),
-          ),
-          Center(
-            child: Text("calls"),
-          ),
-        ]),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushNamed(context, SelectContactsScreen.routeName);
-          },
-          backgroundColor: Colors.blue,
-          child: const Icon(
-            Icons.comment,
-            color: Colors.white,
-          ),
+          const HorizontalBox(width: 15),
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfileScreen()));
+                },
+                child: const ProfilePic()),
+          )
+        ],
+      ),
+      body: const ContactsList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, SelectContactsScreen.routeName);
+        },
+        backgroundColor: const Color.fromRGBO(237, 84, 60, 1),
+        child: const Icon(
+          Iconsax.message_text5,
+          color: Colors.white,
         ),
       ),
     );
@@ -160,19 +127,114 @@ class ProfilePic extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(userdataProvider).when(
-        data: (user) {
-          if (user == null) {
-            return const CircleAvatar(
-              backgroundImage: AssetImage('assets/bg.png'),
-            );
-          } else {
-            return CircleAvatar(backgroundImage: NetworkImage(user.profilePic));
+    final auth = FirebaseAuth.instance;
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(auth.currentUser!.uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          // var data = snapshot.data as DocumentSnapshot;
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loader();
           }
-        },
-        error: (error, trace) {
-          return ErrorSccreen(error: error.toString());
-        },
-        loading: () => const Loader());
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const SizedBox(); // Return an empty widget or show an error message
+          }
+
+          var data = snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
+          return Column(
+            children: [
+              const SizedBox(
+                height: 3,
+              ),
+              Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(
+                    image: NetworkImage(data['profilePic']),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+}
+
+class SearchSection extends StatelessWidget {
+  const SearchSection({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SearchTextWidget(
+        textEditingController: null,
+        isReadOnly: true,
+        onTap: () {},
+        hint: "Search chat",
+      ),
+    );
+  }
+}
+
+class SearchTextWidget extends StatelessWidget {
+  const SearchTextWidget({
+    Key? key,
+    required this.hint,
+    this.isReadOnly = false,
+    required this.onTap,
+    required this.textEditingController,
+    this.onChange,
+  }) : super(key: key);
+  final String hint;
+  final bool isReadOnly;
+
+  final VoidCallback onTap;
+  final ValueSetter<String>? onChange;
+
+  final TextEditingController? textEditingController;
+
+  // late TextEditingController _controller;
+  @override
+  Widget build(BuildContext context) {
+    return CustomColorContainer(
+      left: 1,
+      verticalPadding: 2,
+      bgColor: const Color.fromRGBO(242, 242, 242, 1),
+      child: ConstrainedBox(
+        constraints:
+            const BoxConstraints.expand(height: 40, width: double.maxFinite),
+        child: TextField(
+          autofocus: false,
+          controller: textEditingController,
+          onTap: onTap,
+          readOnly: isReadOnly,
+          onChanged: onChange,
+          onSubmitted: onChange,
+          cursorColor: Colors.white,
+          decoration: InputDecoration(
+              prefixIcon: Container(
+                padding: const EdgeInsets.all(12),
+                child: Image.asset(
+                  "assets/search.png",
+                  height: 16,
+                  width: 16,
+                  color: const Color.fromRGBO(100, 115, 127, 1),
+                ),
+              ),
+              border: InputBorder.none,
+              hintStyle: const TextStyle(fontSize: 15),
+              hintText: hint),
+        ),
+      ),
+    );
   }
 }

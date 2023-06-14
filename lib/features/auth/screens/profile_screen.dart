@@ -1,32 +1,41 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:whatsapp_ui/colors.dart';
+import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
-import 'package:whatsapp_ui/model/user_model.dart';
-
-import '../../../common/widgets/error.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(userdataProvider).when(
-        data: (user) {
-          return ProfileWidget(
-            user: user!,
-          );
-        },
-        error: (error, trace) {
-          return ErrorSccreen(error: error.toString());
-        },
-        loading: () => const Loader());
+    final auth = FirebaseAuth.instance;
+
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(auth.currentUser!.uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          // var data = snapshot.data as DocumentSnapshot;
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loader();
+          }
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Loader(); // Return an empty widget or show an error message
+          }
+
+          var data = snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
+          return ProfileWidget(user: data);
+        });
   }
 }
 
 class ProfileWidget extends ConsumerWidget {
-  final UserModel user;
+  final DocumentSnapshot<Object?> user;
   const ProfileWidget({super.key, required this.user});
 
   void signOut(BuildContext ctx, WidgetRef ref) {
@@ -37,8 +46,15 @@ class ProfileWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: appBarColor,
-        title: const Text("Profile"),
+        // backgroundColor: appBarColor,
+        title: InkWell(
+            onTap: () {
+              print(FirebaseAuth.instance.currentUser!.uid);
+            },
+            child: Text(
+              "Profile",
+              style: authScreenheadingStyle(),
+            )),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -51,7 +67,7 @@ class ProfileWidget extends ConsumerWidget {
             Align(
               alignment: Alignment.center,
               child: CircleAvatar(
-                backgroundImage: NetworkImage(user.profilePic),
+                backgroundImage: NetworkImage(user['profilePic']),
                 radius: 80,
               ),
             ),
@@ -66,16 +82,14 @@ class ProfileWidget extends ConsumerWidget {
                 width: 150,
                 // color: const Color.fromRGBO(255, 255, 255, 0.1),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.blueGrey),
+                    borderRadius: BorderRadius.circular(41),
+                    color: const Color.fromRGBO(237, 84, 60, 1)),
                 child: const Padding(
                   padding: EdgeInsets.only(left: 10),
                   child: Center(
                     child: Text(
                       "Edit profile",
-                      style: TextStyle(
-                        fontSize: 22,
-                      ),
+                      style: TextStyle(fontSize: 22, color: Colors.white),
                     ),
                   ),
                 ),
@@ -84,12 +98,9 @@ class ProfileWidget extends ConsumerWidget {
             const SizedBox(
               height: 20,
             ),
-            const Text(
+            Text(
               "Name",
-              style: TextStyle(fontSize: 20, color: Colors.grey),
-            ),
-            const SizedBox(
-              height: 10,
+              style: authScreenheadingStyle().copyWith(fontSize: 18),
             ),
             Container(
               height: 50,
@@ -102,25 +113,13 @@ class ProfileWidget extends ConsumerWidget {
                 padding: const EdgeInsets.only(left: 10),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
-                    user.name,
-                    style: const TextStyle(
-                      fontSize: 22,
-                    ),
-                  ),
+                  child: Text(user['name'],
+                      style: authScreensubTitleStyle().copyWith(fontSize: 20)),
                 ),
               ),
             ),
-            const SizedBox(
-              height: 40,
-            ),
-            const Text(
-              "Mobile Number",
-              style: TextStyle(fontSize: 20, color: Colors.grey),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
+            Text("Mobile Number",
+                style: authScreenheadingStyle().copyWith(fontSize: 18)),
             Container(
               height: 50,
               width: double.maxFinite,
@@ -131,10 +130,8 @@ class ProfileWidget extends ConsumerWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  user.phoneNumber,
-                  style: const TextStyle(
-                    fontSize: 22,
-                  ),
+                  user['phoneNumber'],
+                  style: authScreensubTitleStyle().copyWith(fontSize: 18),
                 ),
               ),
             ),
@@ -150,16 +147,14 @@ class ProfileWidget extends ConsumerWidget {
                 width: double.maxFinite,
                 // color: const Color.fromRGBO(255, 255, 255, 0.1),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.blue),
+                    borderRadius: BorderRadius.circular(41),
+                    color: const Color.fromRGBO(237, 84, 60, 1)),
                 child: const Padding(
                   padding: EdgeInsets.only(left: 10),
                   child: Center(
                     child: Text(
                       "Log Out",
-                      style: TextStyle(
-                        fontSize: 22,
-                      ),
+                      style: TextStyle(fontSize: 22, color: Colors.white),
                     ),
                   ),
                 ),
@@ -171,3 +166,6 @@ class ProfileWidget extends ConsumerWidget {
     );
   }
 }
+
+
+// d3zwXHhttDaUEg1dwUXigKHXZuv1

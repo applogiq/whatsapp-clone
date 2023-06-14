@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:whatsapp_ui/colors.dart';
+import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_ui/features/chat/screens/mobile_chat_screen.dart';
 import 'package:whatsapp_ui/model/chat_contact.dart';
 import 'package:whatsapp_ui/model/group.dart' as model;
+import 'package:whatsapp_ui/model/message_model.dart';
+import 'package:whatsapp_ui/screens/mobile_layout_screen.dart';
 
 class ContactsList extends ConsumerWidget {
   const ContactsList({Key? key}) : super(key: key);
@@ -15,202 +18,480 @@ class ContactsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     FirebaseFirestore firestore;
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            StreamBuilder<List<model.Group>>(
-                stream: ref.watch(chatControllerProvider).chatGroups(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Loader();
-                  }
+    Message? _message;
+    return Column(
+      children: [
+        const SearchSection(),
+        Expanded(
+          child: ListView(
+            children: [
+              Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        StreamBuilder<List<model.Group>>(
+                          stream:
+                              ref.watch(chatControllerProvider).chatGroups(),
+                          builder: (context, groupSnapshot) {
+                            if (groupSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Loader();
+                            }
+                            final List<model.Group> groups =
+                                groupSnapshot.data ?? [];
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      var groupData = snapshot.data![index];
+                            return StreamBuilder<List<ChatContact>>(
+                              stream: ref
+                                  .watch(chatControllerProvider)
+                                  .chatContact(),
+                              builder: (context, contactSnapshot) {
+                                if (contactSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Loader();
+                                }
+                                final List<ChatContact> contacts =
+                                    contactSnapshot.data ?? [];
 
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MobileChatScreen(
-                                            memberIdList: groupData.membersUid,
-                                            memberId: index,
-                                            members: groupData.membersUid.length
-                                                .toString(),
-                                            isGroupChat: true,
-                                            name: groupData.name,
-                                            uid: groupData.groupId,
-                                            profileImage: groupData.groupPic,
-                                          )));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ListTile(
-                                title: Text(
-                                  groupData.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 6.0),
-                                  child: Text(
-                                    groupData.lastMessage,
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    groupData.groupPic,
-                                  ),
-                                  radius: 30,
-                                ),
-                                trailing: Text(
-                                  DateFormat.Hm().format(groupData.timeSent),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const Divider(color: dividerColor, indent: 85),
-                        ],
-                      );
-                    },
-                  );
-                }),
-            StreamBuilder<List<ChatContact>>(
-                stream: ref.watch(chatControllerProvider).chatContact(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Loader();
-                  }
+                                final List<dynamic> combinedData = [
+                                  ...groups,
+                                  ...contacts
+                                ];
 
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: (context, index) {
-                      var chatContactData = snapshot.data![index];
+                                combinedData.sort((a, b) {
+                                  final DateTime aTime = a is model.Group
+                                      ? a.timeSent
+                                      : a.timeSent;
+                                  final DateTime bTime = b is model.Group
+                                      ? b.timeSent
+                                      : b.timeSent;
+                                  return bTime.compareTo(aTime);
+                                });
 
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MobileChatScreen(
-                                            isGroupChat: false,
-                                            name: chatContactData.name,
-                                            uid: chatContactData.contactId,
-                                            profileImage:
-                                                chatContactData.profilePic,
-                                          )));
-                              // Navigator.pushNamed(
-                              //   context,
-                              //   MobileChatScreen.routeName,
-                              //   arguments: {
-                              //     'name': chatContactData.name,
-                              //     'uid': chatContactData.contactId,
-                              //     'isGroupChat': true,
-                              //     // 'profilePic': chatContactData.profilePic,
-                              //   },
-                              // );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: ListTile(
-                                title: Text(
-                                  chatContactData.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 6.0),
-                                  child: Text(
-                                    chatContactData.lastMessage,
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                                leading: CircleAvatar(
-                                  backgroundImage: NetworkImage(
-                                    chatContactData.profilePic,
-                                  ),
-                                  radius: 30,
-                                ),
-                                trailing: Text(
-                                  DateFormat.Hm()
-                                      .format(chatContactData.timeSent),
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                                ),
+                                return ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  physics: const BouncingScrollPhysics(),
+                                  itemCount: combinedData.length,
+                                  itemBuilder: (context, index) {
+                                    final dynamic data = combinedData[index];
 
-                                // StreamBuilder(
-                                //     stream: ref
-                                //         .read(chatControllerProvider)
-                                //         .chatStream(
-                                //             chatContactData.contactId),
-                                //     builder: (context, snapshot) {
-                                //       final message = snapshot.data;
-                                //       final messages = snapshot.data![index];
-                                //       return const CircleAvatar(
-                                //         radius: 10,
-                                //         backgroundColor: Colors.blue,
-                                //       );
-                                //     })
+                                    if (data is model.Group) {
+                                      // Display group data
+                                      return Column(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MobileChatScreen(
+                                                    memberIdList:
+                                                        data.membersUid,
+                                                    memberId: index,
+                                                    members: data
+                                                        .membersUid.length
+                                                        .toString(),
+                                                    isGroupChat: true,
+                                                    name: data.name,
+                                                    uid: data.groupId,
+                                                    profileImage: data.groupPic,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: ListTile(
+                                                title: Text(
+                                                  data.name,
+                                                  style:
+                                                      authScreenheadingStyle()
+                                                          .copyWith(
+                                                              fontSize: 15),
+                                                ),
+                                                subtitle: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 6.0),
+                                                  child: Text(
+                                                    data.lastMessage,
+                                                    style: const TextStyle(
+                                                      fontSize: 15,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ),
+                                                leading: Container(
+                                                  height: 50,
+                                                  width: 50,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          data.groupPic),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
+                                                trailing: Text(
+                                                  DateFormat.Hm()
+                                                      .format(data.timeSent),
+                                                  style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Divider(
+                                              color:
+                                                  Color.fromRGBO(0, 0, 0, 0.1),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    } else if (data is ChatContact) {
+                                      // Display chat contact data
+                                      return Column(
+                                        children: [
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MobileChatScreen(
+                                                    isGroupChat: false,
+                                                    name: data.name,
+                                                    uid: data.contactId,
+                                                    profileImage:
+                                                        data.profilePic,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: ListTile(
+                                                title: Text(
+                                                  data.name,
+                                                  style:
+                                                      authScreenheadingStyle()
+                                                          .copyWith(
+                                                              fontSize: 15),
+                                                ),
+                                                subtitle: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 6.0),
+                                                  child: StreamBuilder<
+                                                      QuerySnapshot<
+                                                          Map<String,
+                                                              dynamic>>>(
+                                                    stream: FirebaseFirestore
+                                                        .instance
+                                                        .collection("users")
+                                                        .doc(FirebaseAuth
+                                                            .instance
+                                                            .currentUser!
+                                                            .uid)
+                                                        .collection("chats")
+                                                        .doc(data.contactId)
+                                                        .collection("messages")
+                                                        .orderBy('timeSent',
+                                                            descending: true)
+                                                        .limit(1)
+                                                        .snapshots(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot.hasData) {
+                                                        var messageData =
+                                                            snapshot.data!.docs;
 
-                                // StreamBuilder(
-                                // stream: FirebaseFirestore.instance
-                                //     .collection("users")
-                                //     .doc(FirebaseAuth
-                                //         .instance.currentUser!.uid)
-                                //     .collection("chats")
-                                //     .doc(chatContactData.contactId)
-                                //     .collection("messages")
-                                //     .snapshots(),
-                                // builder: (context, snapshot) {
-                                //   final data =
-                                //       snapshot.data as DocumentSnapshot;
-                                //   print(
-                                //       "12345 ${FirebaseAuth.instance.currentUser!.uid}");
-                                //   print(
-                                //       "123${chatContactData.contactId}");
+                                                        final List<Message>
+                                                            messages =
+                                                            messageData
+                                                                .map((e) => Message
+                                                                    .fromMap(e
+                                                                        .data()))
+                                                                .toList();
 
-                                //   // final message = data![index];
-                                //   if (snapshot.connectionState ==
-                                //       ConnectionState.waiting) {
-                                //     return const Loader();
-                                //   }
-                                //   return const Text("xdxxx");
-                                // }),
+                                                        if (messages
+                                                            .isNotEmpty) {
+                                                          _message =
+                                                              messages[0];
+                                                        }
 
-                                //   ],
-                                // ),
-                              ),
-                            ),
-                          ),
-                          const Divider(color: dividerColor, indent: 85),
-                        ],
-                      );
-                    },
-                  );
-                }),
-          ],
+                                                        if (FirebaseAuth
+                                                                .instance
+                                                                .currentUser!
+                                                                .uid ==
+                                                            _message
+                                                                ?.senderId) {
+                                                          return Text(
+                                                            data.lastMessage,
+                                                            style:
+                                                                const TextStyle(
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              fontSize: 15,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          );
+                                                        } else if (_message ==
+                                                            null) {
+                                                          return const Text(
+                                                              "No Message yet....");
+                                                        } else if (_message!
+                                                            .isSeen) {
+                                                          return Text(
+                                                            data.lastMessage,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 15,
+                                                              color:
+                                                                  Colors.grey,
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          return Text(
+                                                            data.lastMessage,
+                                                            style:
+                                                                const TextStyle(
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              fontSize: 15,
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      237,
+                                                                      84,
+                                                                      60,
+                                                                      1),
+                                                            ),
+                                                          );
+                                                        }
+                                                      } else {
+                                                        return Text(
+                                                          data.lastMessage,
+                                                          style:
+                                                              const TextStyle(
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            fontSize: 15,
+                                                            color: Colors.grey,
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                                leading: Container(
+                                                  height: 50,
+                                                  width: 50,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    image: DecorationImage(
+                                                      image: NetworkImage(
+                                                          data.profilePic),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
+                                                trailing: StreamBuilder<
+                                                    QuerySnapshot<
+                                                        Map<String, dynamic>>>(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection("users")
+                                                      .doc(FirebaseAuth.instance
+                                                          .currentUser!.uid)
+                                                      .collection("chats")
+                                                      .doc(data.contactId)
+                                                      .collection("messages")
+                                                      .orderBy('timeSent',
+                                                          descending: true)
+                                                      .limit(1)
+                                                      .snapshots(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      var messageData =
+                                                          snapshot.data!.docs;
+
+                                                      final List<Message>
+                                                          messages = messageData
+                                                              .map((e) => Message
+                                                                  .fromMap(
+                                                                      e.data()))
+                                                              .toList();
+
+                                                      if (messages.isNotEmpty) {
+                                                        _message = messages[0];
+                                                      }
+
+                                                      if (FirebaseAuth
+                                                              .instance
+                                                              .currentUser!
+                                                              .uid ==
+                                                          _message?.senderId) {
+                                                        return Text(
+                                                          DateFormat.Hm()
+                                                              .format(data
+                                                                  .timeSent),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .grey),
+                                                        );
+                                                      } else if (_message ==
+                                                          null) {
+                                                        return const SizedBox
+                                                            .shrink();
+                                                      } else if (_message!
+                                                          .isSeen) {
+                                                        return Text(
+                                                          DateFormat.Hm()
+                                                              .format(data
+                                                                  .timeSent),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .grey),
+                                                        );
+                                                      } else {
+                                                        return Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          children: [
+                                                            Text(
+                                                              DateFormat.Hm()
+                                                                  .format(data
+                                                                      .timeSent),
+                                                              style: const TextStyle(
+                                                                  color: Colors
+                                                                      .red),
+                                                            ),
+                                                            StreamBuilder<
+                                                                    QuerySnapshot<
+                                                                        Map<String,
+                                                                            dynamic>>>(
+                                                                stream: FirebaseFirestore
+                                                                    .instance
+                                                                    .collection(
+                                                                        "users")
+                                                                    .doc(FirebaseAuth
+                                                                        .instance
+                                                                        .currentUser!
+                                                                        .uid)
+                                                                    .collection(
+                                                                        "chats")
+                                                                    .doc(data
+                                                                        .contactId)
+                                                                    .collection(
+                                                                        "messages")
+                                                                    .snapshots(),
+                                                                builder: (context,
+                                                                    snapshot) {
+                                                                  if (snapshot
+                                                                      .hasData) {
+                                                                    int trueMessagesCount =
+                                                                        0;
+                                                                    final messages =
+                                                                        snapshot
+                                                                            .data!
+                                                                            .docs;
+                                                                    // Count the number of messages with isSeen = true
+                                                                    for (final message
+                                                                        in messages) {
+                                                                      final isSeen =
+                                                                          message
+                                                                              .data()['isSeen'];
+                                                                      if (isSeen ==
+                                                                          false) {
+                                                                        trueMessagesCount++;
+                                                                      }
+                                                                    }
+                                                                    return CircleAvatar(
+                                                                      radius:
+                                                                          10,
+                                                                      backgroundColor:
+                                                                          const Color.fromRGBO(
+                                                                              237,
+                                                                              84,
+                                                                              60,
+                                                                              1),
+                                                                      child:
+                                                                          Text(
+                                                                        trueMessagesCount
+                                                                            .toString(),
+                                                                        style: const TextStyle(
+                                                                            color:
+                                                                                Colors.white),
+                                                                      ),
+                                                                    );
+                                                                  } else {
+                                                                    return const CircularProgressIndicator();
+                                                                  }
+                                                                }),
+                                                          ],
+                                                        );
+                                                      }
+                                                    } else {
+                                                      return Text(
+                                                        DateFormat.Hm().format(
+                                                            data.timeSent),
+                                                        style: const TextStyle(
+                                                            color: Colors.grey),
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16),
+                                            child: Divider(
+                                              color:
+                                                  Color.fromRGBO(0, 0, 0, 0.1),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    } else {
+                                      return const SizedBox.shrink();
+                                    }
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

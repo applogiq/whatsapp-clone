@@ -13,10 +13,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const LoginScreen());
     case OTPScreen.routeName:
       final verificationId = settings.arguments as String;
+      final phoneNumber = settings.arguments as String;
       // final isLoad = settings.arguments as bool;
 
       return MaterialPageRoute(
           builder: (context) => OTPScreen(
+                phoneNumber: phoneNumber,
                 verificationId: verificationId,
               ));
     case UserInformationScreen.routeName:

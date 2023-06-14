@@ -49,8 +49,18 @@ dependencies:
   cached_video_player: ^2.0.4
   emoji_picker_flutter: ^1.5.4
   flutter_windowmanager: ^0.2.0
-  firebase_messaging: ^14.6.1
+  firebase_messaging: ^14.6.2
   overlay_support: ^2.1.0
+  google_fonts: ^4.0.4
+  iconsax: ^0.0.8
+  firebase_analytics: ^10.4.2
+  http: ^0.13.6
+  flutter_local_notifications: ^12.0.3
+  flutter_phoenix: ^1.1.1
+  
+  restart_app: ^1.2.1
+  
+ 
   # flutter_local_notifications: ^14.1.0
   # flutter_screen_recording: ^2.0.8
 

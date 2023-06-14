@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'package:whatsapp_ui/common/enums/message_enum.dart';
 import 'package:whatsapp_ui/common/repositories/common_firebase_storage_repositor.dart';
 import 'package:whatsapp_ui/common/utils/utils.dart';
+import 'package:whatsapp_ui/features/chat/model/chat_model.dart';
 import 'package:whatsapp_ui/model/chat_contact.dart';
 import 'package:whatsapp_ui/model/message_model.dart';
 import 'package:whatsapp_ui/model/user_model.dart';
@@ -186,13 +187,15 @@ class ChatRepository {
     }
   }
 
-  void sentTextMessage(
+  sentTextMessage(
       {required BuildContext context,
       required String text,
       required String receiverUserId,
       required UserModel sendUser,
       required bool isGroupChat}) async {
     try {
+      print("oii");
+
       var timesent = DateTime.now();
       UserModel? receiverdata;
       if (!isGroupChat) {
@@ -200,6 +203,7 @@ class ChatRepository {
             await firestore.collection("users").doc(receiverUserId).get();
         receiverdata = UserModel.fromMap(userdatamap.data()!);
       }
+
       var messageId = const Uuid().v4();
       _saveDataToContactSubCollection(
           sendUser, receiverdata, text, timesent, receiverUserId, isGroupChat);
@@ -212,8 +216,11 @@ class ChatRepository {
           messageId: messageId,
           receiverUserName: receiverdata?.name,
           username: sendUser.name);
+
+      PushNotification().sendPushNotification(
+          receiverdata!.deviceToken, 'Chat App', "New Message", context);
     } catch (e) {
-      showSnackBar(context: context, content: e.toString());
+      // showSnackBar(context: context, content: e.toString());
     }
   }
 
@@ -313,15 +320,41 @@ class ChatRepository {
       showSnackBar(context: context, content: e.toString());
     }
   }
+
+  Stream<List<Message>> getlastMessage(String receiverUserId) {
+    return firestore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .collection('chats')
+        .doc(receiverUserId)
+        .collection('messages')
+        .orderBy('timeSent', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((event) {
+      List<Message> messages = [];
+      for (var document in event.docs) {
+        messages.add(Message.fromMap(document.data()));
+      }
+      return messages;
+    });
+  }
 }
 
-//   void getChatStreamSeenDa(String receiverUserId) {
+//  Stream<List<Message>> getChatStream(String receiverUserId) {
 //     return firestore
 //         .collection("users")
 //         .doc(auth.currentUser!.uid)
 //         .collection("chats")
 //         .doc(receiverUserId)
 //         .collection("messages")
-//         .get();
+//         .orderBy("timeSent")
+//         .snapshots()
+//         .map((event) {
+//       List<Message> messages = [];
+//       for (var document in event.docs) {
+//         messages.add(Message.fromMap(document.data()));
+//       }
+//       return messages;
+//     });
 //   }
-// }

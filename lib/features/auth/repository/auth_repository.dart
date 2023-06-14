@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_ui/common/repositories/common_firebase_storage_repositor.dart';
@@ -21,11 +22,15 @@ class AuthRepository {
 
   AuthRepository({required this.auth, required this.fireStore});
   Future<UserModel?> getCurrentUserData() async {
+    print("😂😂😂😂no");
+
     var userdata =
         await fireStore.collection("users").doc(auth.currentUser?.uid).get();
     UserModel? user;
     if (userdata.data() != null) {
       user = UserModel.fromMap(userdata.data()!);
+    } else {
+      print("😂😂😂😂no");
     }
     return user;
   }
@@ -49,6 +54,7 @@ class AuthRepository {
                 ctx,
                 MaterialPageRoute(
                     builder: (ctx) => OTPScreen(
+                          phoneNumber: phoneNumber,
                           verificationId: verificatioId,
                         )));
           }),
@@ -101,6 +107,10 @@ class AuthRepository {
             );
       }
 
+      final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+      String? token = await _firebaseMessaging.getToken();
+
       var user = UserModel(
         name: name,
         uid: uid,
@@ -109,6 +119,7 @@ class AuthRepository {
         phoneNumber: auth.currentUser!.phoneNumber!,
         groupId: [],
         lastSeen: lastSeen,
+        deviceToken: token!,
       );
 
       await fireStore.collection('users').doc(uid).set(user.toMap());

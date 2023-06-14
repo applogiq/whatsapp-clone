@@ -24,48 +24,55 @@ class MyMessageCard extends StatelessWidget {
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width - 45,
         ),
-        child: Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          color: Colors.blue,
-          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-          child: Stack(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Padding(
-                  padding: type == MessageEnum.text
-                      ? const EdgeInsets.only(
-                          left: 10,
-                          right: 30,
-                          top: 5,
-                          bottom: 20,
-                        )
-                      : const EdgeInsets.only(
-                          left: 5,
-                          right: 5,
-                          top: 5,
-                          bottom: 20,
-                        ),
-                  child: DisplayTextImageGIF(message: message, type: type)),
-              Positioned(
-                bottom: 4,
-                right: 10,
-                child: Row(
-                  children: [
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white60,
-                      ),
+              Card(
+                elevation: 1,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(16),
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16))),
+                color: const Color.fromRGBO(249, 233, 231, 1),
+                // margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: Padding(
+                    padding: type == MessageEnum.text
+                        ? const EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                            top: 20,
+                            bottom: 25,
+                          )
+                        : const EdgeInsets.only(
+                            left: 5,
+                            right: 5,
+                            top: 5,
+                            bottom: 20,
+                          ),
+                    child: DisplayTextImageGIF(message: message, type: type)),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(isSeen ? Icons.done_all : Icons.done,
+                      size: 20,
+                      color: isSeen
+                          ? const Color.fromRGBO(237, 84, 60, 1)
+                          : Colors.grey),
+                  Text(
+                    date,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black,
                     ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Icon(isSeen ? Icons.done_all : Icons.done,
-                        size: 20,
-                        color: isSeen ? Colors.green : Colors.white60),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                ],
               ),
             ],
           ),
