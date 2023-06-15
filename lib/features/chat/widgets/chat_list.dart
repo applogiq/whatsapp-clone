@@ -14,6 +14,7 @@ import 'package:whatsapp_ui/features/chat/widgets/sender_message_card.dart';
 class ChatList extends ConsumerStatefulWidget {
   final String receiverUserid;
   final bool isGroupChat;
+
   const ChatList({
     Key? key,
     required this.receiverUserid,
@@ -30,153 +31,149 @@ class _ChatListState extends ConsumerState<ChatList> {
   @override
   void dispose() {
     messageController.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Message>>(
-        stream: widget.isGroupChat
-            ? ref
-                .read(chatControllerProvider)
-                .groupChatStream(widget.receiverUserid)
-            : ref
-                .read(chatControllerProvider)
-                .chatStream(widget.receiverUserid),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Loader();
-          }
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            messageController
-                .jumpTo(messageController.position.maxScrollExtent);
-          });
-          final messages = snapshot.data;
-
-          if (messages == null || messages.isEmpty) {
-            return const Center(
-              child: Text('No messages yet.'),
-            );
-          }
-          final conversationStartDate = messages.first.timeSent;
-          final now = DateTime.now();
-          final today = DateTime(now.year, now.month, now.day);
-          final yesterDay = today.subtract(const Duration(days: 1));
-          String conversationStartLabel;
-          final isToday = conversationStartDate.year == today.year &&
-              conversationStartDate.month == today.month &&
-              conversationStartDate.day == today.day;
-          final isYesterday = conversationStartDate.year == yesterDay.year &&
-              conversationStartDate.month == yesterDay.month &&
-              conversationStartDate.day == yesterDay.day;
-
-          if (isToday) {
-            conversationStartLabel = 'Today';
-          } else if (isYesterday) {
-            conversationStartLabel = 'Yesterday';
-          } else {
-            conversationStartLabel =
-                DateFormat('MMMM dd, yyyy').format(conversationStartDate);
-          }
-          final isTodayOrYesterday = isToday || isYesterday;
-
-          return Column(
-            children: [
-              // if (isTodayOrYesterday)
-              // Container(
-              //   // padding: const EdgeInsets.all(8.0),
-              //   color: Colors.blue,
-              //   child: Text(
-              //     conversationStartLabel,
-              //     style: const TextStyle(
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              // ),
-              Expanded(
-                child: ListView.builder(
-                  controller: messageController,
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    final messageData = snapshot.data![index];
-
-                    var timeSent = DateFormat.Hm().format(messageData.timeSent);
-                    if (!messageData.isSeen &&
-                        messageData.recieverid ==
-                            FirebaseAuth.instance.currentUser!.uid) {
-                      ref.read(chatControllerProvider).setChatMessageSeen(
-                          context,
-                          widget.receiverUserid,
-                          messageData.messageId);
-                    }
-                    if (messageData.senderId ==
-                        FirebaseAuth.instance.currentUser!.uid) {
-                      return MyMessageCard(
-                          message: messageData.text,
-                          date: timeSent,
-                          type: messageData.type,
-                          isSeen: messageData.isSeen);
-                    }
-
-                    return widget.isGroupChat
-                        ? SenderMessageCard(
-                            nameWidget:
-                                // const SizedBox.shrink(),
-                                StreamBuilder<
-                                    DocumentSnapshot<Map<String, dynamic>>>(
-                              stream: FirebaseFirestore.instance
-                                  .collection("users")
-                                  .doc(messageData.senderId)
-                                  .snapshots(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Text('');
-                                }
-                                if (!snapshot.hasData ||
-                                    snapshot.data == null) {
-                                  return const Text(
-                                      ''); // or display a message indicating no contacts
-                                }
-                                var data = snapshot.data!
-                                    .data(); // Access the snapshot data using the data() method
-                                if (data == null) {
-                                  return const Text('');
-                                  // or handle the case when data is null
-                                }
-                                return Text(
-                                  data['name'].toString(),
-                                  style: authScreensubTitleStyle().copyWith(
-                                      color:
-                                          const Color.fromRGBO(236, 61, 23, 1)),
-                                );
-                              },
-                            ),
-                            message: messageData.text,
-                            date: timeSent,
-                            type: messageData.type,
-                          )
-                        : SenderMessageCard(
-                            nameWidget: const SizedBox.shrink(),
-                            message: messageData.text,
-                            date: timeSent,
-                            type: messageData.type,
-                          );
-                  },
-                ),
-              ),
-            ],
-          );
+      stream: widget.isGroupChat
+          ? ref
+              .read(chatControllerProvider)
+              .groupChatStream(widget.receiverUserid)
+          : ref.read(chatControllerProvider).chatStream(widget.receiverUserid),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Loader();
+        }
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          messageController.jumpTo(messageController.position.maxScrollExtent);
         });
+        final messages = snapshot.data;
+
+        if (messages == null || messages.isEmpty) {
+          return const Center(
+            child: Text('No messages yet.'),
+          );
+        }
+
+        return ListView.builder(
+          controller: messageController,
+          itemCount: messages.length,
+          itemBuilder: (context, index) {
+            final messageData = messages[index];
+            final messageStartDate = messageData.timeSent;
+            final previousMessageIndex = index - 1;
+
+            String conversationStartLabel = '';
+
+            // Check if it's the first message or if the start date is different from the previous message
+            if (index == 0 ||
+                (previousMessageIndex >= 0 &&
+                    messages[previousMessageIndex].timeSent.day !=
+                        messageStartDate.day)) {
+              final now = DateTime.now();
+              final today = DateTime(now.year, now.month, now.day);
+              final yesterDay = today.subtract(const Duration(days: 1));
+
+              if (messageStartDate.year == today.year &&
+                  messageStartDate.month == today.month &&
+                  messageStartDate.day == today.day) {
+                conversationStartLabel = 'Today';
+              } else if (messageStartDate.year == yesterDay.year &&
+                  messageStartDate.month == yesterDay.month &&
+                  messageStartDate.day == yesterDay.day) {
+                conversationStartLabel = 'Yesterday';
+              } else {
+                conversationStartLabel =
+                    DateFormat('MMMM dd, yyyy').format(messageStartDate);
+              }
+            }
+
+            var timeSent = DateFormat.Hm().format(messageStartDate);
+
+            // Render the conversation start label if it's a new day
+            if (conversationStartLabel.isNotEmpty) {
+              return Column(
+                children: [
+                  Container(
+                    color: Colors.blue,
+                    child: Text(
+                      conversationStartLabel,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  // Render the message card
+                  _buildMessageCard(messageData, timeSent),
+                ],
+              );
+            } else {
+              // Render the message card without the conversation start label
+              return _buildMessageCard(messageData, timeSent);
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildMessageCard(Message messageData, String timeSent) {
+    if (!messageData.isSeen &&
+        messageData.recieverid == FirebaseAuth.instance.currentUser!.uid) {
+      ref.read(chatControllerProvider).setChatMessageSeen(
+            context,
+            widget.receiverUserid,
+            messageData.messageId,
+          );
+    }
+
+    if (messageData.senderId == FirebaseAuth.instance.currentUser!.uid) {
+      return MyMessageCard(
+        message: messageData.text,
+        date: timeSent,
+        type: messageData.type,
+        isSeen: messageData.isSeen,
+      );
+    }
+
+    return widget.isGroupChat
+        ? SenderMessageCard(
+            nameWidget: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(messageData.senderId)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text('');
+                }
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return const Text(
+                      ''); // or display a message indicating no contacts
+                }
+                var data = snapshot.data!.data();
+                if (data == null) {
+                  return const Text(''); // or handle the case when data is null
+                }
+                return Text(
+                  data['name'].toString(),
+                  style: authScreensubTitleStyle().copyWith(
+                    color: const Color.fromRGBO(236, 61, 23, 1),
+                  ),
+                );
+              },
+            ),
+            message: messageData.text,
+            date: timeSent,
+            type: messageData.type,
+          )
+        : SenderMessageCard(
+            nameWidget: const SizedBox.shrink(),
+            message: messageData.text,
+            date: timeSent,
+            type: messageData.type,
+          );
   }
 }
-
-// class ChatList extends ConsumerWidget {
- 
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-   
-//   }
-// }

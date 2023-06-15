@@ -32,6 +32,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
   }
 
   bool isLoading = false;
+  bool isButtonEnable = false;
 
   void storeUserData() async {
     String name = nameController.text.trim();
@@ -44,6 +45,8 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
             name,
             image,
           );
+    } else {
+      showSnackBar(context: context, content: 'Please Select Your Photo');
     }
     Future.delayed(const Duration(milliseconds: 2000), () {
       isLoading = false;
@@ -108,7 +111,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                 ),
               ],
             ),
-            const VerticalBox(height: 16),
+            // const VerticalBox(height: 16),
             Text(
               "Enter your name",
               style: textFieldHeadingStyle(),
@@ -119,6 +122,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
             SizedBox(
               width: size.width,
               child: TextField(
+                textCapitalization: TextCapitalization.words,
                 controller: nameController,
                 autofocus: true,
                 decoration: InputDecoration(
@@ -136,19 +140,32 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                     contentPadding: const EdgeInsets.fromLTRB(10, 12, 0, 0)),
                 cursorWidth: 1.2,
                 cursorColor: Colors.black,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    isButtonEnable = false;
+                    setState(() {});
+                  } else if (RegExp(r"\s").hasMatch(value)) {
+                    isButtonEnable = false;
+                    setState(() {});
+                  } else {
+                    isButtonEnable = true;
+                    setState(() {});
+                  }
+                },
                 style: authScreensubTitleStyle().copyWith(fontSize: 15),
               ),
             ),
             const Spacer(),
             InkWell(
-              onTap: () => storeUserData(),
+              onTap: isButtonEnable ? () => storeUserData() : () {},
               child: Container(
                 height: 54,
                 width: double.maxFinite,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(41),
-                    color: const Color.fromRGBO(237, 84, 60, 1)),
+                    color: isButtonEnable
+                        ? Colors.green
+                        : const Color.fromRGBO(237, 84, 60, 1)),
                 child: Center(
                   child: isLoading
                       ? const CircularProgressIndicator(
@@ -164,6 +181,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
                 ),
               ),
             ),
+            const VerticalBox(height: 5)
           ],
         ),
       ),

@@ -147,7 +147,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
           isContainerVisible
@@ -252,32 +252,32 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: const Color.fromRGBO(255, 255, 255, 1),
-                        suffixIcon: SizedBox(
-                          width: 100,
-                          // padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              InkWell(
-                                onTap: selectImage,
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              InkWell(
-                                onTap: selectVideo,
-                                child: const Icon(
-                                  Icons.attach_file,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // suffixIcon: SizedBox(
+                        //   width: 100,
+                        //   // padding: EdgeInsets.symmetric(horizontal: 20.0),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.end,
+                        //     children: [
+                        //       InkWell(
+                        //         onTap: selectImage,
+                        //         child: const Icon(
+                        //           Icons.camera_alt,
+                        //           color: Colors.grey,
+                        //         ),
+                        //       ),
+                        //       const SizedBox(
+                        //         width: 10,
+                        //       ),
+                        //       InkWell(
+                        //         onTap: selectVideo,
+                        //         child: const Icon(
+                        //           Icons.attach_file,
+                        //           color: Colors.grey,
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         hintText: 'Type a message',
                         hintStyle: const TextStyle(
                             color: Color.fromRGBO(27, 16, 11, 0.6),
@@ -312,6 +312,9 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
               ),
             ),
           ),
+          const SizedBox(
+            height: 20,
+          )
         ],
       ),
     );

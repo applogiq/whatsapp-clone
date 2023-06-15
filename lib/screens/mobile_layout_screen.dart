@@ -77,8 +77,8 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
         title: Text('Applogiq', style: authScreenheadingStyle()),
         actions: [
           SizedBox(
-            height: 30,
-            width: 30,
+            height: 25,
+            width: 25,
             child: InkWell(
               onTap: () {
                 // Navigator.pushNamed(context, CreateGroupScreen.routeName);
@@ -145,13 +145,14 @@ class ProfilePic extends ConsumerWidget {
 
           var data = snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
           return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(
                 height: 3,
               ),
               Container(
-                height: 50,
-                width: 50,
+                height: 35,
+                width: 35,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   image: DecorationImage(

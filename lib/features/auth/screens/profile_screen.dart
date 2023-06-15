@@ -74,27 +74,28 @@ class ProfileWidget extends ConsumerWidget {
             const SizedBox(
               height: 30,
             ),
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                height: 50,
+            // Align(
+            //   alignment: Alignment.center,
+            //   child: Container(
+            //     height: 50,
 
-                width: 150,
-                // color: const Color.fromRGBO(255, 255, 255, 0.1),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(41),
-                    color: const Color.fromRGBO(237, 84, 60, 1)),
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Center(
-                    child: Text(
-                      "Edit profile",
-                      style: TextStyle(fontSize: 22, color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            //     width: 150,
+            //     // color: const Color.fromRGBO(255, 255, 255, 0.1),
+            //     decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(41),
+            //         color: const Color.fromRGBO(237, 84, 60, 1)),
+            //     child: const Padding(
+            //       padding: EdgeInsets.only(left: 10),
+            //       child: Center(
+            //         child: Text(
+            //           "Edit profile",
+            //           style: TextStyle(fontSize: 22, color: Colors.white),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+
             const SizedBox(
               height: 20,
             ),

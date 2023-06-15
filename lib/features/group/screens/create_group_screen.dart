@@ -23,8 +23,11 @@ class CreateGroupScreen extends ConsumerStatefulWidget {
 class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   final TextEditingController groupNameController = TextEditingController();
   File? image;
+  bool isButtonEnable = false;
+  String errorText = '';
   void selectImage() async {
     image = await pickImageFromGallery(context);
+    groupNameController.text = '';
     setState(() {});
   }
 
@@ -51,6 +54,20 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       print(e.toString());
     }
     print("3");
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    errorText = '';
+    setState(() {});
+    if (image == null) {
+      isButtonEnable = false;
+      setState(() {});
+    } else {
+      isButtonEnable = true;
+    }
   }
 
   @override
@@ -125,6 +142,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             SizedBox(
               width: size.width,
               child: TextField(
+                textCapitalization: TextCapitalization.words,
                 autofocus: true,
                 controller: groupNameController,
                 decoration: InputDecoration(
@@ -142,21 +160,50 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                     contentPadding: const EdgeInsets.fromLTRB(10, 12, 0, 0)),
                 cursorWidth: 1.2,
                 cursorColor: Colors.black,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    isButtonEnable = false;
+                    errorText = 'The value is empty';
+                    setState(() {});
+                  } else if (RegExp(r"\s").hasMatch(value)) {
+                    isButtonEnable = false;
+                    errorText = 'The group name does not contains any space';
+
+                    setState(() {});
+                  } else if (image == null) {
+                    isButtonEnable = false;
+                    errorText = 'Select valid image';
+
+                    setState(() {});
+                  } else {
+                    isButtonEnable = true;
+                    errorText = '';
+
+                    setState(() {});
+                  }
+                },
                 style: authScreensubTitleStyle().copyWith(fontSize: 15),
               ),
             ),
+            Text(
+              errorText,
+              style: const TextStyle(color: Colors.red),
+            ),
             const Spacer(),
             InkWell(
-              onTap: () {
-                createGroup();
-              },
+              onTap: isButtonEnable
+                  ? () {
+                      createGroup();
+                    }
+                  : () {},
               child: Container(
                 height: 54,
                 width: double.maxFinite,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(41),
-                    color: const Color.fromRGBO(237, 84, 60, 1)),
+                    color: isButtonEnable
+                        ? Colors.green
+                        : const Color.fromRGBO(237, 84, 60, 1)),
                 child: Center(
                   child: Text('Create group',
                       style: GoogleFonts.manrope(

@@ -27,7 +27,7 @@ class IndividualChatProfileScreen extends StatelessWidget {
 
             var data = snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
             return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Padding(
                 //   padding: const EdgeInsets.only(left: 16, bottom: 100),
