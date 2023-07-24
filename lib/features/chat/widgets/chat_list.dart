@@ -12,6 +12,8 @@ import 'package:whatsapp_ui/model/message_model.dart';
 import 'package:whatsapp_ui/features/chat/widgets/my_message_card.dart';
 import 'package:whatsapp_ui/features/chat/widgets/sender_message_card.dart';
 
+import '../../interner_connectivity/controller/internet_connection_controller.dart';
+
 class ChatList extends ConsumerStatefulWidget {
   final String receiverUserid;
   final bool isGroupChat;
@@ -37,6 +39,8 @@ class _ChatListState extends ConsumerState<ChatList> {
 
   @override
   Widget build(BuildContext context) {
+    final internetConnectionStatus =
+        ref.watch(internetConnectionStatusProvider);
     return StreamBuilder<List<Message>>(
       stream: widget.isGroupChat
           ? ref

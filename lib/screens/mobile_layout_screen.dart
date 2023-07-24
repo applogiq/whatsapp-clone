@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:whatsapp_ui/common/config/size_config.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
@@ -16,6 +17,8 @@ import 'package:whatsapp_ui/features/group/screens/select_group_contacts.dart';
 import 'package:whatsapp_ui/features/select_contact/screens/select_contacts_screens.dart';
 import 'package:whatsapp_ui/widgets/contacts_list.dart';
 import 'package:whatsapp_ui/widgets/custom_color_container.dart';
+
+import '../features/interner_connectivity/controller/internet_connection_controller.dart';
 
 class MobileLayoutScreen extends ConsumerStatefulWidget {
   const MobileLayoutScreen({Key? key}) : super(key: key);
@@ -180,6 +183,9 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
 
   @override
   Widget build(BuildContext context) {
+    final internetConnectionStatus =
+        ref.watch(internetConnectionStatusProvider);
+
     return WillPopScope(
       onWillPop: () async {
         showAlertDialog(context);
@@ -232,7 +238,23 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
             )
           ],
         ),
-        body: const ContactsList(),
+        body: Stack(
+          children: [
+            const ContactsList(),
+            internetConnectionStatus ==
+                    const AsyncValue.data(InternetConnectionStatus.disconnected)
+                ? Positioned(
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      color: const Color.fromRGBO(5, 31, 50, 0.5),
+                    ),
+                  )
+                : const SizedBox.shrink()
+          ],
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.pushNamed(context, SelectContactsScreen.routeName);

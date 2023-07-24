@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +98,11 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                       builder: (context, groupSnapshot) {
                         if (groupSnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Loader();
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * 0.4),
+                            child: const Loader(),
+                          );
                         }
                         final List<model.Group> groups =
                             groupSnapshot.data ?? [];
@@ -108,7 +113,12 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                           builder: (context, contactSnapshot) {
                             if (contactSnapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return const Loader();
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                    top: MediaQuery.of(context).size.height *
+                                        0.4),
+                                child: const Loader(),
+                              );
                             }
                             final List<ChatContact> contacts =
                                 contactSnapshot.data ?? [];
@@ -195,16 +205,26 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                               ),
                                             ),
                                           ),
-                                          leading: Container(
-                                            height: 44,
-                                            width: 44,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              image: DecorationImage(
-                                                image:
-                                                    NetworkImage(data.groupPic),
+                                          leading: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: SizedBox(
+                                              height: 44,
+                                              width: 44,
+                                              child: CachedNetworkImage(
+                                                imageUrl: data.groupPic,
                                                 fit: BoxFit.cover,
+
+                                                placeholder: (context, url) =>
+                                                    SizedBox(
+                                                  height: 44,
+                                                  width: 44,
+                                                  child: Image.asset(
+                                                      "assets/default_profile.png"),
+                                                ), // Display loader while image is being loaded
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
                                               ),
                                             ),
                                           ),
@@ -241,6 +261,7 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                           });
                                         },
                                         onTap: () {
+                                          // data.de
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -352,16 +373,25 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                                 },
                                               ),
                                             ),
-                                            leading: Container(
-                                              height: 44,
-                                              width: 44,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                image: DecorationImage(
-                                                  image: NetworkImage(
-                                                      data.profilePic),
+                                            leading: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: SizedBox(
+                                                height: 44,
+                                                width: 44,
+                                                child: CachedNetworkImage(
+                                                  imageUrl: data.profilePic,
                                                   fit: BoxFit.cover,
+                                                  placeholder: (context, url) =>
+                                                      SizedBox(
+                                                    height: 44,
+                                                    width: 44,
+                                                    child: Image.asset(
+                                                        "assets/default_profile.png"),
+                                                  ), // Displa// Display loader while image is being loaded
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      const Icon(Icons.error),
                                                 ),
                                               ),
                                             ),

@@ -2,11 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
 import 'package:whatsapp_ui/features/auth/screens/about_screen.dart';
+import 'package:whatsapp_ui/features/auth/screens/login_screen.dart';
+import 'package:whatsapp_ui/features/interner_connectivity/screen/no_internet_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -14,25 +17,29 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = FirebaseAuth.instance;
+    final internetStatus = ref.watch(internetConnectionStatusProvider);
+    return internetStatus ==
+            const AsyncValue.data(InternetConnectionStatus.disconnected)
+        ? const NoInternetScreen()
+        : StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(auth.currentUser!.uid)
+                .snapshots(),
+            builder: (context, snapshot) {
+              // var data = snapshot.data as DocumentSnapshot;
 
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(auth.currentUser!.uid)
-            .snapshots(),
-        builder: (context, snapshot) {
-          // var data = snapshot.data as DocumentSnapshot;
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Loader();
+              }
+              if (!snapshot.hasData || snapshot.data == null) {
+                return const Loader(); // Return an empty widget or show an error message
+              }
 
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Loader();
-          }
-          if (!snapshot.hasData || snapshot.data == null) {
-            return const Loader(); // Return an empty widget or show an error message
-          }
-
-          var data = snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
-          return ProfileWidget(user: data);
-        });
+              var data =
+                  snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
+              return ProfileWidget(user: data);
+            });
   }
 }
 

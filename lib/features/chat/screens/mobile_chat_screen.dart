@@ -10,6 +10,7 @@ import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
 import 'package:whatsapp_ui/features/call/call_pickup_screen.dart';
 import 'package:whatsapp_ui/features/call/controller/call_controller.dart';
+import 'package:whatsapp_ui/features/chat/model/chat_model.dart';
 import 'package:whatsapp_ui/features/chat/screens/individual_chat_profile.dart';
 import 'package:whatsapp_ui/features/chat/widgets/bottom_chat_field.dart';
 import 'package:whatsapp_ui/features/group/screens/group_contacts.dart';
@@ -248,6 +249,12 @@ class MobileChatScreen extends ConsumerWidget {
                         ),
                         InkWell(
                             onTap: () {
+                              print(snapshot.data!.deviceToken);
+                              PushNotification().sendPushNotification(
+                                  snapshot.data!.deviceToken,
+                                  'incomming Call!!!!!!!!!!!!!!!!!!!',
+                                  "New Message",
+                                  context);
                               makeCall(ref, context, true);
                             },
                             child: const Icon(Iconsax.call5)),

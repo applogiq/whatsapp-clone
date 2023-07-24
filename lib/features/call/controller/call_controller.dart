@@ -56,6 +56,7 @@ class CallController {
 
     if (user != null) {
       Call senderCallData = Call(
+          isInCommingCall: false,
           isAudioCall: isAudioCall,
           callerId: auth.currentUser!.uid,
           callerName: user!.name,
@@ -66,6 +67,7 @@ class CallController {
           callId: callId,
           hasDialled: true);
       Call receiverCallData = Call(
+          isInCommingCall: true,
           isAudioCall: isAudioCall,
           callerId: auth.currentUser!.uid,
           callerName: user!.name,

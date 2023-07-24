@@ -2,11 +2,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:whatsapp_ui/common/config/size_config.dart';
 import 'package:whatsapp_ui/common/config/theme.dart';
 import 'package:whatsapp_ui/common/widgets/error.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
+import 'package:whatsapp_ui/features/interner_connectivity/controller/internet_connection_controller.dart';
+import 'package:whatsapp_ui/features/interner_connectivity/screen/no_internet_screen.dart';
 import 'package:whatsapp_ui/features/landing/screens/landing_screen.dart';
 import 'package:whatsapp_ui/firebase_options.dart';
 import 'package:whatsapp_ui/router.dart';
@@ -58,23 +61,28 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     SizeConfig().init(context);
+    final internetConnectionStatus =
+        ref.watch(internetConnectionStatusProvider);
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Whatsapp UI',
         theme: Themes().lightTheme(context),
         onGenerateRoute: (settings) => generateRoute(settings),
-        home: ref.watch(userdataProvider).when(
-            data: (user) {
-              if (user == null) {
-                return const LandingScreen();
-              } else {
-                return const MobileLayoutScreen();
-              }
-            },
-            error: (error, trace) {
-              print(error.toString());
-              return ErrorSccreen(error: error.toString());
-            },
-            loading: () => const Scaffold(body: Loader())));
+        home: internetConnectionStatus ==
+                const AsyncValue.data(InternetConnectionStatus.disconnected)
+            ? const NoInternetScreen()
+            : ref.watch(userdataProvider).when(
+                data: (user) {
+                  if (user == null) {
+                    return const LandingScreen();
+                  } else {
+                    return const MobileLayoutScreen();
+                  }
+                },
+                error: (error, trace) {
+                  print(error.toString());
+                  return ErrorSccreen(error: error.toString());
+                },
+                loading: () => const Scaffold(body: Loader())));
   }
 }

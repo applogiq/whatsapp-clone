@@ -13,8 +13,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
    <application
-        android:label="whatsapp_ui"
-        android:icon="@mipmap/ic_launcher">
+        android:label="ChatQ"
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

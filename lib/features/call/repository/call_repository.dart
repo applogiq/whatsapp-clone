@@ -27,6 +27,9 @@ class CallRepository {
   void makeCall(Call senderCallData, BuildContext context,
       Call receiversCallData, bool isAudioCall) async {
     try {
+      print("❤️");
+      print(senderCallData.isInCommingCall);
+      print(receiversCallData.isInCommingCall);
       await fireStore
           .collection('call')
           .doc(senderCallData.callerId)

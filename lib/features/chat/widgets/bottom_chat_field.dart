@@ -8,11 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
 import 'package:whatsapp_ui/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_ui/common/enums/message_enum.dart';
 import 'package:whatsapp_ui/features/chat/widgets/attachment_components.dart';
+import 'package:whatsapp_ui/features/interner_connectivity/widgets/no_internet_pop_up.dart';
+
+import '../../interner_connectivity/controller/internet_connection_controller.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
@@ -191,6 +195,9 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
 
   @override
   Widget build(BuildContext context) {
+    final internetConnectionStatus =
+        ref.watch(internetConnectionStatusProvider);
+
     // checkKeyboardVisibility();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -323,7 +330,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
                     ),
                   ),
                   GestureDetector(
-                    onTap: sentTextMessage,
+                    onTap: internetConnectionStatus ==
+                            const AsyncValue.data(
+                                InternetConnectionStatus.disconnected)
+                        ? () {
+                            showAlertDialogInternet(context);
+                          }
+                        : sentTextMessage,
                     child: CircleAvatar(
                       radius: 20,
                       backgroundColor: isShowSendButton
