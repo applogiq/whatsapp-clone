@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,15 +7,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:whatsapp_ui/colors.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
+import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/common/widgets/box/horizontal_box.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
 import 'package:whatsapp_ui/common/widgets/loader.dart';
+import 'package:whatsapp_ui/features/auth/screens/edit_profile_picture_screen.dart';
 import 'package:whatsapp_ui/features/chat/screens/mobile_chat_screen.dart';
 import 'package:whatsapp_ui/features/chat/widgets/custome_switch.dart';
 import 'package:whatsapp_ui/features/group/screens/add_contacts.dart';
 import 'package:whatsapp_ui/screens/mobile_layout_screen.dart';
 
-class GroupContactsScreens extends ConsumerWidget {
+class GroupContactsScreens extends ConsumerStatefulWidget {
   const GroupContactsScreens({
     Key? key,
     required this.memberList,
@@ -29,26 +33,53 @@ class GroupContactsScreens extends ConsumerWidget {
   final int membersId;
   final List memberList;
   final String groupId;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    FirebaseFirestore fireStore = FirebaseFirestore.instance;
-    deleteStringList(String documentId, String newValue) async {
-      final collectionRef = FirebaseFirestore.instance.collection('groups');
-      final documentRef = collectionRef.doc(documentId);
+  ConsumerState<GroupContactsScreens> createState() =>
+      _GroupContactsScreensState();
+}
 
-      final snapshot = await documentRef.get();
-      if (snapshot.exists) {
-        final data = snapshot.data() as Map<String, dynamic>;
-        final list = List<String>.from(data['membersUid']);
+class _GroupContactsScreensState extends ConsumerState<GroupContactsScreens> {
+  File? image;
 
-        list.remove(newValue);
-
-        await documentRef.update({'membersUid': list});
-      }
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const MobileLayoutScreen()));
+  selectImage() async {
+    image = await pickImageFromGallery(context);
+    if (image != null) {
+      return Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => EditprofilePicture(
+                    groupId: widget.groupId,
+                    isGroupprofile: true,
+                    editImage: image!,
+                  )));
+    } else {
+      // User canceled the image selection
+      return null;
     }
+  }
 
+  FirebaseFirestore fireStore = FirebaseFirestore.instance;
+
+  deleteStringList(String documentId, String newValue) async {
+    final collectionRef = FirebaseFirestore.instance.collection('groups');
+    final documentRef = collectionRef.doc(documentId);
+
+    final snapshot = await documentRef.get();
+    if (snapshot.exists) {
+      final data = snapshot.data() as Map<String, dynamic>;
+      final list = List<String>.from(data['membersUid']);
+
+      list.remove(newValue);
+
+      await documentRef.update({'membersUid': list});
+    }
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const MobileLayoutScreen()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           // leading:Icon(Icons.arrow_back) ,
@@ -58,27 +89,6 @@ class GroupContactsScreens extends ConsumerWidget {
         body: SafeArea(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     Padding(
-          //       padding: const EdgeInsets.only(left: 16, top: 16),
-          //       child: InkWell(
-          //           onTap: () {
-          //             Navigator.pop(context);
-          //           },
-          //           child: const Icon(Icons.arrow_back)),
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.only(right: 16, top: 16),
-          //       child: InkWell(
-          //           onTap: () {
-          //             Navigator.pop(context);
-          //           },
-          //           child: const Icon(Icons.more_vert)),
-          //     ),
-          //   ],
-          // ),
           Container(
             color: whiteColor,
             child: Column(
@@ -88,9 +98,28 @@ class GroupContactsScreens extends ConsumerWidget {
                   children: [
                     Align(
                       alignment: Alignment.center,
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(profilePic),
-                        radius: 60,
+                      child: Stack(
+                        alignment: AlignmentDirectional.bottomEnd,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            backgroundImage: NetworkImage(widget.profilePic),
+                            radius: 60,
+                          ),
+                          InkWell(
+                            onTap: selectImage,
+                            child: const CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              child: Center(
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.black,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
@@ -120,7 +149,7 @@ class GroupContactsScreens extends ConsumerWidget {
                                                   print(FirebaseAuth.instance
                                                       .currentUser!.uid);
                                                   deleteStringList(
-                                                      groupId,
+                                                      widget.groupId,
                                                       FirebaseAuth.instance
                                                           .currentUser!.uid);
                                                   print(
@@ -143,14 +172,14 @@ class GroupContactsScreens extends ConsumerWidget {
                           )
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
                 const SizedBox(
                   height: 8,
                 ),
                 Text(
-                  name,
+                  widget.name,
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w600),
                 ),
@@ -158,7 +187,7 @@ class GroupContactsScreens extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Text(
-                    "$members  Participants",
+                    "${widget.members}  Participants",
                     style: authScreensubTitleStyle(),
                   ),
                 ),
@@ -171,7 +200,7 @@ class GroupContactsScreens extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) => AddGroupContacts(
-                                  groupId: groupId,
+                                  groupId: widget.groupId,
                                 )));
                   },
                   child: Container(
@@ -246,12 +275,12 @@ class GroupContactsScreens extends ConsumerWidget {
             child: Container(
               color: whiteColor,
               child: ListView.builder(
-                itemCount: memberList.length,
+                itemCount: widget.memberList.length,
                 itemBuilder: (context, index) {
                   return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                     stream: fireStore
                         .collection('users')
-                        .doc(memberList[index])
+                        .doc(widget.memberList[index])
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -307,106 +336,132 @@ class GroupContactsScreens extends ConsumerWidget {
           ),
         ])));
   }
-
-  // StreamBuilder<List<model.Group>>(
-  //   stream: ref.watch(chatControllerProvider).chatGroups(),
-  //   builder: (context, snapshot) {
-  //     if (snapshot.connectionState == ConnectionState.waiting) {
-  //       return const Loader();
-  //     } else if (snapshot.hasError) {
-  //       return const Center(
-  //         child: Text("Error occurred"),
-  //       );
-  //     } else {
-  //       print(
-  //         snapshot.data![0].membersUid.length,
-  //       );
-  //       if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-  //         return Expanded(
-  //           child: ListView.builder(
-  //             scrollDirection: Axis.vertical,
-  //             physics: const BouncingScrollPhysics(),
-  //             itemCount: int.parse(members),
-  //             shrinkWrap: true,
-  //             itemBuilder: (context, index) {
-  //               print(int.parse(members).toString());
-  //               print(membersId);
-  //               var groupData = snapshot.data![index];
-  //               if (index >= groupData.membersUid.length) {
-  //                 return const SizedBox(); // Skip rendering if index is out of range
-  //               }
-  //               var memberUid = groupData.membersUid[index];
-
-  //               return StreamBuilder<
-  //                   DocumentSnapshot<Map<String, dynamic>>>(
-  //                 stream: fireStore
-  //                     .collection('users')
-  //                     .doc(memberUid)
-  //                     .snapshots(),
-  //                 builder: (context, snapshot) {
-  //                   if (snapshot.connectionState ==
-  //                       ConnectionState.waiting) {
-  //                     return const Loader();
-  //                   } else if (snapshot.hasData &&
-  //                       snapshot.data != null) {
-  //                     var name = snapshot.data!.data()!['name'];
-  //                     var profilePicture =
-  //                         snapshot.data!.data()!['profilePic'];
-
-  //                     return InkWell(
-  //                       onTap: () {
-  //                         Navigator.push(
-  //                             context,
-  //                             MaterialPageRoute(
-  //                                 builder: (context) =>
-  //                                     MobileChatScreen(
-  //                                         isGroupChat: false,
-  //                                         name: name,
-  //                                         uid: memberUid,
-  //                                         profileImage: profilePic)));
-  //                       },
-  //                       child: Padding(
-  //                         padding: const EdgeInsets.symmetric(
-  //                             vertical: 12),
-  //                         child: ListTile(
-  //                           leading: Container(
-  //                             height: 50,
-  //                             width: 50,
-  //                             decoration: BoxDecoration(
-  //                               borderRadius:
-  //                                   BorderRadius.circular(12),
-  //                               image: DecorationImage(
-  //                                 image: NetworkImage(profilePicture),
-  //                                 fit: BoxFit.cover,
-  //                               ),
-  //                             ),
-  //                           ),
-  //                           title: Text(
-  //                             name,
-  //                             style: authScreenheadingStyle()
-  //                                 .copyWith(
-  //                                     fontWeight: FontWeight.w600,
-  //                                     fontSize: 14),
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     );
-  //                   } else if (snapshot.hasError) {
-  //                     return const Text("Error occurred");
-  //                   } else {
-  //                     return const CircularProgressIndicator();
-  //                   }
-  //                 },
-  //               );
-  //             },
-  //           ),
-  //         );
-  //       } else {
-  //         return const Center(
-  //           child: CircularProgressIndicator(),
-  //         );
-  //       }
-  //     }
-  //   },
-  // ),
 }
+
+
+
+
+
+// class GroupContactsScreens extends ConsumerWidget {
+//   const GroupContactsScreens({
+//     Key? key,
+//     required this.memberList,
+//     required this.members,
+//     required this.profilePic,
+//     required this.name,
+//     required this.membersId,
+//     required this.groupId,
+//   }) : super(key: key);
+//   final String profilePic;
+//   final String name;
+//   final String members;
+//   final int membersId;
+//   final List memberList;
+//   final String groupId;
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+   
+//   }
+
+//   // StreamBuilder<List<model.Group>>(
+//   //   stream: ref.watch(chatControllerProvider).chatGroups(),
+//   //   builder: (context, snapshot) {
+//   //     if (snapshot.connectionState == ConnectionState.waiting) {
+//   //       return const Loader();
+//   //     } else if (snapshot.hasError) {
+//   //       return const Center(
+//   //         child: Text("Error occurred"),
+//   //       );
+//   //     } else {
+//   //       print(
+//   //         snapshot.data![0].membersUid.length,
+//   //       );
+//   //       if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+//   //         return Expanded(
+//   //           child: ListView.builder(
+//   //             scrollDirection: Axis.vertical,
+//   //             physics: const BouncingScrollPhysics(),
+//   //             itemCount: int.parse(members),
+//   //             shrinkWrap: true,
+//   //             itemBuilder: (context, index) {
+//   //               print(int.parse(members).toString());
+//   //               print(membersId);
+//   //               var groupData = snapshot.data![index];
+//   //               if (index >= groupData.membersUid.length) {
+//   //                 return const SizedBox(); // Skip rendering if index is out of range
+//   //               }
+//   //               var memberUid = groupData.membersUid[index];
+
+//   //               return StreamBuilder<
+//   //                   DocumentSnapshot<Map<String, dynamic>>>(
+//   //                 stream: fireStore
+//   //                     .collection('users')
+//   //                     .doc(memberUid)
+//   //                     .snapshots(),
+//   //                 builder: (context, snapshot) {
+//   //                   if (snapshot.connectionState ==
+//   //                       ConnectionState.waiting) {
+//   //                     return const Loader();
+//   //                   } else if (snapshot.hasData &&
+//   //                       snapshot.data != null) {
+//   //                     var name = snapshot.data!.data()!['name'];
+//   //                     var profilePicture =
+//   //                         snapshot.data!.data()!['profilePic'];
+
+//   //                     return InkWell(
+//   //                       onTap: () {
+//   //                         Navigator.push(
+//   //                             context,
+//   //                             MaterialPageRoute(
+//   //                                 builder: (context) =>
+//   //                                     MobileChatScreen(
+//   //                                         isGroupChat: false,
+//   //                                         name: name,
+//   //                                         uid: memberUid,
+//   //                                         profileImage: profilePic)));
+//   //                       },
+//   //                       child: Padding(
+//   //                         padding: const EdgeInsets.symmetric(
+//   //                             vertical: 12),
+//   //                         child: ListTile(
+//   //                           leading: Container(
+//   //                             height: 50,
+//   //                             width: 50,
+//   //                             decoration: BoxDecoration(
+//   //                               borderRadius:
+//   //                                   BorderRadius.circular(12),
+//   //                               image: DecorationImage(
+//   //                                 image: NetworkImage(profilePicture),
+//   //                                 fit: BoxFit.cover,
+//   //                               ),
+//   //                             ),
+//   //                           ),
+//   //                           title: Text(
+//   //                             name,
+//   //                             style: authScreenheadingStyle()
+//   //                                 .copyWith(
+//   //                                     fontWeight: FontWeight.w600,
+//   //                                     fontSize: 14),
+//   //                           ),
+//   //                         ),
+//   //                       ),
+//   //                     );
+//   //                   } else if (snapshot.hasError) {
+//   //                     return const Text("Error occurred");
+//   //                   } else {
+//   //                     return const CircularProgressIndicator();
+//   //                   }
+//   //                 },
+//   //               );
+//   //             },
+//   //           ),
+//   //         );
+//   //       } else {
+//   //         return const Center(
+//   //           child: CircularProgressIndicator(),
+//   //         );
+//   //       }
+//   //     }
+//   //   },
+//   // ),
+// }

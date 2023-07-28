@@ -57,6 +57,7 @@ class ChatController {
   // }
 
   Future<void> sentTextMessage(
+    List memberid,
     BuildContext context,
     String text,
     String receiverUserId,
@@ -85,6 +86,7 @@ class ChatController {
     if (user != null) {
       try {
         await chatRepository.sentTextMessage(
+          groupMemberId: memberid,
           isGroupChat: isGroupChat,
           context: context,
           text: text,
@@ -161,6 +163,11 @@ class ChatController {
   void setChatMessageSeen(
       BuildContext context, String receiverUserid, String messageId) {
     chatRepository.setMessageSeen(context, receiverUserid, messageId);
+  }
+
+  void groupsetChatMessageSeen(
+      BuildContext context, String receiverUserid, String messageId) {
+    chatRepository.groupSetMessageSeen(context, receiverUserid, messageId);
   }
 
   Stream<List<Message>> getLastMessage(String receiverUserid) {

@@ -8,6 +8,7 @@ class Message {
   final DateTime timeSent;
   final String messageId;
   final bool isSeen;
+  final Map<String, dynamic> additionalData;
   // final String repliedMessage;
   // final String repliedTo;
   // final MessageEnum repliedMessageType;
@@ -20,6 +21,7 @@ class Message {
     required this.timeSent,
     required this.messageId,
     required this.isSeen,
+    this.additionalData = const {},
     // required this.repliedMessage,
     // required this.repliedTo,
     // required this.repliedMessageType,
@@ -34,6 +36,8 @@ class Message {
       'timeSent': timeSent.millisecondsSinceEpoch,
       'messageId': messageId,
       'isSeen': isSeen,
+      'additionalData': additionalData,
+
       // 'repliedMessage': repliedMessage,
       // 'repliedTo': repliedTo,
       // 'repliedMessageType': repliedMessageType.type,
@@ -49,6 +53,7 @@ class Message {
       timeSent: DateTime.fromMillisecondsSinceEpoch(map['timeSent']),
       messageId: map['messageId'] ?? '',
       isSeen: map['isSeen'] ?? false,
+      additionalData: map['additionalData'] ?? {},
       // repliedMessage: map['repliedMessage'] ?? '',
       // repliedTo: map['repliedTo'] ?? '',
       // repliedMessageType: (map['repliedMessageType'] as String).toEnum(),

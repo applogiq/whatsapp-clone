@@ -24,9 +24,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // disableScreenRecordingAndScreenshots();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // PushNotification().setupFirebaseMessaging("Head", "Sub");
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   getDeviceToken();
-  // await setupFirebaseMessaging();
+  // setupFirebaseMessaging();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -39,16 +40,16 @@ void getDeviceToken() async {
 // Send this token to your server for identification and future notification delivery
 }
 
-// void setupFirebaseMessaging() async {
-//   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//     print(
-//         'Received message while app is in the foreground: ${message.notification}');
-// // Handle the notification here
-//   });
-//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//     print('A new onMessageOpenedApp event was published!');
-//   });
-// }
+void setupFirebaseMessaging() async {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print(
+        'Received message while app is in the foreground: ${message.notification}');
+// Handle the notification here
+  });
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print('A new onMessageOpenedApp event was published!');
+  });
+}
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 // Handle the incoming message here

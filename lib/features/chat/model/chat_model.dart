@@ -7,17 +7,40 @@ import 'package:http/http.dart' as http;
 import 'package:whatsapp_ui/common/utils/utils.dart';
 
 class PushNotification {
+  // print("💕");
+
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  setupFirebaseMessaging(String head, String sub) async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-          'Received message while app is in the foreground: ${message.notification}');
-      showNotification(head, sub);
-    });
+  PushNotification() {
+    // Initialize the plugin in the constructor
+    const initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    // final initializationSettingsIOS = IOSInitializationSettings();
+    const initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid,
+    );
+
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+  setupFirebaseMessaging(String head, String sub) {
+    try {
+      print("💕1");
+
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        print(
+            '💕💕💕💕💕💕💕💕💕💕💕💕💕Received message while app is in the foreground: ${message.notification}');
+        await showNotification(head, sub);
+      });
+    } catch (e) {
+      print("💕6");
+
+      print(e.toString());
+    }
   }
 
   Future<void> showNotification(String head, String sub) async {
+    print("💕2");
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'your_channel_id',
@@ -34,8 +57,10 @@ class PushNotification {
         payload: 'foreground_notification');
   }
 
-  void sendPushNotification(
+  Future<void> sendPushNotification(
       String deviceToken, String title, String body, BuildContext ctx) async {
+    print("💕3");
+
     try {
       String serverKey =
           // 'dSuRkgdFStK5TCSmwmRdPB:APA91bF59P6A1gyJb-QGU-WAE8IJUtKhNedHzklPEZcSMyc82TjlLNtd6_T5HqmOpkfSNIOpskSQA6s_Ur1DpwVr0p_RBIaK-euQme-qg3IGZcHSi9aV36mP8qv-B2HF4F_nkXXdfwuh';
@@ -67,9 +92,16 @@ class PushNotification {
           headers: headers, body: jsonEncode(payload));
 
       if (response.statusCode == 200) {
+        print("💕4");
         await setupFirebaseMessaging(title, body);
-      } else {}
+      } else {
+        print(
+            "Failed to send notification. Status code: ${response.statusCode}");
+        print("💕💕5");
+      }
     } catch (e) {
+      print("💕6");
+
       showSnackBar(context: ctx, content: e.toString());
     }
   }

@@ -299,6 +299,7 @@ class ProfilePic extends ConsumerWidget {
                 height: 3,
               ),
               CircleAvatar(
+                backgroundColor: Colors.grey,
                 backgroundImage: NetworkImage(data['profilePic']),
               )
             ],

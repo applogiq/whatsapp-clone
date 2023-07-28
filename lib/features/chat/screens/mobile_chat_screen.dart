@@ -3,10 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:whatsapp_ui/common/config/size_config.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/box/horizontal_box.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
-import 'package:whatsapp_ui/common/widgets/loader.dart';
+import 'package:whatsapp_ui/common/widgets/shimmer/shimmer.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
 import 'package:whatsapp_ui/features/call/call_pickup_screen.dart';
 import 'package:whatsapp_ui/features/call/controller/call_controller.dart';
@@ -17,7 +18,7 @@ import 'package:whatsapp_ui/features/group/screens/group_contacts.dart';
 import 'package:whatsapp_ui/model/user_model.dart';
 import 'package:whatsapp_ui/features/chat/widgets/chat_list.dart';
 
-class MobileChatScreen extends ConsumerWidget {
+class MobileChatScreen extends ConsumerStatefulWidget {
   static const String routeName = '/mobile-chat-screen';
   final String name;
   final String uid;
@@ -37,53 +38,55 @@ class MobileChatScreen extends ConsumerWidget {
     required this.profileImage,
   }) : super(key: key);
 
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _MobileChatScreenState();
+}
+
+class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
   void makeCall(
     WidgetRef ref,
     BuildContext context,
     bool isAudioCall,
   ) {
-    ref
-        .read(callControllerprovider)
-        .makeCall(context, name, uid, profileImage, isGroupChat, isAudioCall);
+    ref.read(callControllerprovider).makeCall(context, widget.name, widget.uid,
+        widget.profileImage, widget.isGroupChat, isAudioCall);
+  }
+
+  var datastream;
+  @override
+  void initState() {
+    datastream = ref.read(authControllerProvider).userDataById(widget.uid);
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    FirebaseFirestore fireStore = FirebaseFirestore.instance;
-
+  Widget build(BuildContext context) {
     return CallPickUpScreen(
-      callerId: uid,
+      callerId: widget.uid,
       receiverId: FirebaseAuth.instance.currentUser!.uid,
       scaffold: Scaffold(
         backgroundColor: const Color(0xffFAFAFA),
         appBar: AppBar(
-          // elevation: 10,
           shadowColor: const Color.fromRGBO(5, 31, 50, 0.06),
-          // backgroundColor: appBarColor,
+
           automaticallyImplyLeading: false,
-          // leading: InkWell(
-          //     onTap: () async {
-          //       await FirebaseFirestore.instance
-          //           .collection("users")
-          //           .doc(uid)
-          //           .update({'isTyping': false});
-          //       Navigator.pop(context);
-          //     },
-          //     child: const Icon(Icons.arrow_back)),
+
           titleSpacing: 0,
-          title: isGroupChat
+          title: widget.isGroupChat
               ? InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => GroupContactsScreens(
-                            members: members,
-                            profilePic: profileImage,
-                            name: name,
-                            membersId: memberId!,
-                            memberList: memberIdList!,
-                            groupId: uid),
+                            members: widget.members,
+                            profilePic: widget.profileImage,
+                            name: widget.name,
+                            membersId: widget.memberId!,
+                            memberList: widget.memberIdList!,
+                            groupId: widget.uid),
                       ),
                     );
                   },
@@ -97,7 +100,7 @@ class MobileChatScreen extends ConsumerWidget {
                           child: const Icon(Icons.arrow_back)),
                       const HorizontalBox(width: 10),
                       CircleAvatar(
-                        backgroundImage: NetworkImage(profileImage),
+                        backgroundImage: NetworkImage(widget.profileImage),
                       ),
                       const SizedBox(
                         height: 30,
@@ -110,7 +113,7 @@ class MobileChatScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              name,
+                              widget.name,
                               style: authScreenheadingStyle()
                                   .copyWith(fontSize: 20),
                               overflow: TextOverflow.ellipsis,
@@ -123,10 +126,10 @@ class MobileChatScreen extends ConsumerWidget {
                   ),
                 )
               : StreamBuilder<UserModel>(
-                  stream: ref.read(authControllerProvider).userDataById(uid),
+                  stream: datastream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Loader();
+                      return appbarShimmer(context);
                     }
 
                     return Row(
@@ -143,7 +146,7 @@ class MobileChatScreen extends ConsumerWidget {
                             child: const Icon(Icons.arrow_back)),
                         const HorizontalBox(width: 10),
                         CircleAvatar(
-                          backgroundImage: NetworkImage(profileImage),
+                          backgroundImage: NetworkImage(widget.profileImage),
                         ),
                         const SizedBox(
                           width: 8,
@@ -158,7 +161,7 @@ class MobileChatScreen extends ConsumerWidget {
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             IndividualChatProfileScreen(
-                                              userId: uid,
+                                              userId: widget.uid,
                                             )));
                               },
                               child: Column(
@@ -166,7 +169,7 @@ class MobileChatScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    name,
+                                    widget.name,
                                     style: authScreenheadingStyle().copyWith(
                                         fontSize: 16,
                                         overflow: TextOverflow.ellipsis),
@@ -248,11 +251,29 @@ class MobileChatScreen extends ConsumerWidget {
                           ),
                         ),
                         InkWell(
-                            onTap: () {
-                              print(snapshot.data!.deviceToken);
+                            onTap: () async {
+                              UserModel? user;
+
+                              Future<UserModel?> getCurrentUserData() async {
+                                var userdata = await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(widget.uid)
+                                    .get();
+
+                                if (userdata.data() != null) {
+                                  try {
+                                    user = UserModel.fromMap(userdata.data()!);
+                                  } catch (e) {
+                                    print(e.toString());
+                                  }
+                                }
+                                return user;
+                              }
+
+                              user = await getCurrentUserData();
                               PushNotification().sendPushNotification(
                                   snapshot.data!.deviceToken,
-                                  'incomming Call!!!!!!!!!!!!!!!!!!!',
+                                  "${user!.name} is Calling you",
                                   "New Message",
                                   context);
                               makeCall(ref, context, true);
@@ -274,7 +295,8 @@ class MobileChatScreen extends ConsumerWidget {
         body: Column(
           children: [
             Expanded(
-              child: ChatList(receiverUserid: uid, isGroupChat: isGroupChat),
+              child: ChatList(
+                  receiverUserid: widget.uid, isGroupChat: widget.isGroupChat),
             ),
             // StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
             //     stream: FirebaseFirestore.instance
@@ -295,12 +317,52 @@ class MobileChatScreen extends ConsumerWidget {
             //           : const SizedBox.shrink();
             //     }),
             BottomChatField(
-              recieverUserId: uid,
-              isGroupChat: isGroupChat,
+              memberId: widget.isGroupChat ? widget.memberIdList! : [],
+              recieverUserId: widget.uid,
+              isGroupChat: widget.isGroupChat,
             ),
           ],
         ),
       ),
     );
   }
+}
+
+Shimmer appbarShimmer(BuildContext context) {
+  SizeConfig().init(context);
+  return Shimmer.fromColors(
+      child: Row(
+        children: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back)),
+          const CircleAvatar(),
+          const HorizontalBox(width: 15),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                width: getProportionateScreenWidth(100),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16)),
+                height: getProportionateScreenHeight(10),
+                // width: getProportionateScreenWidth(120),
+              ),
+              const VerticalBox(height: 15),
+              Container(
+                width: getProportionateScreenWidth(200),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16)),
+                height: getProportionateScreenHeight(10),
+                //  width: getProportionateScreenWidth(120),
+              ),
+            ],
+          ),
+          const Spacer(),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+        ],
+      ),
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!);
 }

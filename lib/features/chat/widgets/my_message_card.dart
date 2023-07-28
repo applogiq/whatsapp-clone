@@ -166,11 +166,13 @@ class _MyMessageCardState extends State<MyMessageCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Icon(widget.isSeen ? Icons.done_all : Icons.done,
-                          size: 16,
-                          color: widget.isSeen
-                              ? const Color.fromRGBO(237, 84, 60, 1)
-                              : Colors.grey),
+                      widget.isGroupChat
+                          ? const SizedBox.shrink()
+                          : Icon(widget.isSeen ? Icons.done_all : Icons.done,
+                              size: 16,
+                              color: widget.isSeen
+                                  ? const Color.fromRGBO(237, 84, 60, 1)
+                                  : Colors.grey),
                       Text(
                         widget.date,
                         style: const TextStyle(

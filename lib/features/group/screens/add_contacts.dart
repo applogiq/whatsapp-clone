@@ -26,33 +26,66 @@ class _AddGroupContactsState extends ConsumerState<AddGroupContacts> {
 
   List<int> selectContacts = [];
   List<Contact> selectedContacts = [];
+  // void selectContactsTile(
+  //     int index, Contact contact, String groupId, String val,BuiildContex) {
+  //   setState(() {
+  //     if (selectContacts.contains(index)) {
+  //       deleteStringList(groupId, val);
+  //       selectContacts.remove(index);
+  //       selectedContacts.remove(contact);
+  //       // Deselect the contact
+  //       // ref
+  //       //     .read(selectedContactGroups.notifier)
+  //       //     .update((state) => state..remove(contact));
+  //     } else {
+  //       print("❤️❤️❤️❤️❤️");
+  //       selectContacts.add(index);
+  //       selectedContacts.add(contact);
+  //       updateStringInList(groupId, val);
+
+  //       // if (!ref.read(selectedContactGroups).contains(contact)) {
+  //       // ref
+  //       //     .read(selectedContactGroups.notifier)
+  //       //     .update((state) => state..add(contact));
+  //       // }
+  //     }
+  //   });
+  // }
+
   void selectContactsTile(
-      int index, Contact contact, String groupId, String val) {
+    int index,
+    Contact contact,
+    String groupId,
+    String val,
+    BuildContext context,
+  ) {
     setState(() {
       if (selectContacts.contains(index)) {
         deleteStringList(groupId, val);
         selectContacts.remove(index);
         selectedContacts.remove(contact);
-        // Deselect the contact
-        // ref
-        //     .read(selectedContactGroups.notifier)
-        //     .update((state) => state..remove(contact));
       } else {
-        print("❤️❤️❤️❤️❤️");
-        selectContacts.add(index);
-        selectedContacts.add(contact);
-        updateStringInList(groupId, val);
-
-        // if (!ref.read(selectedContactGroups).contains(contact)) {
-        // ref
-        //     .read(selectedContactGroups.notifier)
-        //     .update((state) => state..add(contact));
-        // }
+        // Check if the contact is not already selected
+        if (!selectedContacts.contains(contact)) {
+          selectContacts.add(index);
+          selectedContacts.add(contact);
+          updateStringInList(groupId, val, index);
+        } else {
+          // Show error snackbar if the contact is already selected
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('${contact.displayName} is already added to the group.'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
       }
     });
   }
 
-  updateStringInList(String documentId, String newValue) async {
+  Future<void> updateStringInList(
+      String documentId, String newValue, int index) async {
     final collectionRef = FirebaseFirestore.instance.collection('groups');
     final documentRef = collectionRef.doc(documentId);
 
@@ -61,9 +94,21 @@ class _AddGroupContactsState extends ConsumerState<AddGroupContacts> {
       final data = snapshot.data() as Map<String, dynamic>;
       final list = List<String>.from(data['membersUid']);
 
-      list.add(newValue);
-
-      await documentRef.update({'membersUid': list});
+      if (!list.contains(newValue)) {
+        list.add(newValue);
+        await documentRef.update({'membersUid': list});
+      } else {
+        // deleteStringList(documentId, newValue);
+        selectContacts.remove(index);
+        selectedContacts.remove(contact);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contact is already a member of the group.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        setState(() {});
+      }
     }
   }
 
@@ -172,7 +217,7 @@ class _AddGroupContactsState extends ConsumerState<AddGroupContacts> {
                                   print(user['uid']);
 
                                   selectContactsTile(index, contact,
-                                      widget.groupId, user['uid']);
+                                      widget.groupId, user['uid'], context);
                                   print(contact.displayName);
                                 },
                                 child: ListTile(

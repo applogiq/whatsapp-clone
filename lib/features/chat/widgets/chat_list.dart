@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:whatsapp_ui/common/config/size_config.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
-import 'package:whatsapp_ui/common/widgets/loader.dart';
+import 'package:whatsapp_ui/common/widgets/shimmer/shimmer.dart';
 import 'package:whatsapp_ui/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_ui/model/message_model.dart';
 import 'package:whatsapp_ui/features/chat/widgets/my_message_card.dart';
@@ -37,19 +38,26 @@ class _ChatListState extends ConsumerState<ChatList> {
     super.dispose();
   }
 
+  var datastream;
+  @override
+  void initState() {
+    datastream = widget.isGroupChat
+        ? ref
+            .read(chatControllerProvider)
+            .groupChatStream(widget.receiverUserid)
+        : ref.read(chatControllerProvider).chatStream(widget.receiverUserid);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final internetConnectionStatus =
         ref.watch(internetConnectionStatusProvider);
     return StreamBuilder<List<Message>>(
-      stream: widget.isGroupChat
-          ? ref
-              .read(chatControllerProvider)
-              .groupChatStream(widget.receiverUserid)
-          : ref.read(chatControllerProvider).chatStream(widget.receiverUserid),
+      stream: datastream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader();
+          return tripInfoShimmer(context);
         }
         SchedulerBinding.instance.addPostFrameCallback((_) {
           messageController.jumpTo(messageController.position.maxScrollExtent);
@@ -67,6 +75,7 @@ class _ChatListState extends ConsumerState<ChatList> {
           itemCount: messages.length,
           itemBuilder: (context, index) {
             final messageData = messages[index];
+            // messageData.
             final messageStartDate = messageData.timeSent;
             final previousMessageIndex = index - 1;
 
@@ -155,13 +164,28 @@ class _ChatListState extends ConsumerState<ChatList> {
   }
 
   Widget _buildMessageCard(Message messageData, String timeSent) {
-    if (!messageData.isSeen &&
-        messageData.recieverid == FirebaseAuth.instance.currentUser!.uid) {
-      ref.read(chatControllerProvider).setChatMessageSeen(
+    print(">>>>>>>>>>>>>>>>>>>11");
+
+    if (widget.isGroupChat) {
+      print("❤️${widget.receiverUserid}");
+      print("❤️❤️${messageData.messageId}");
+      print("❤️❤️${FirebaseAuth.instance.currentUser!.uid}");
+      ref.read(chatControllerProvider).groupsetChatMessageSeen(
             context,
             widget.receiverUserid,
             messageData.messageId,
           );
+    } else {
+      if (!messageData.isSeen &&
+          messageData.recieverid == FirebaseAuth.instance.currentUser!.uid) {
+        print(">>>>>>>>>>>>>>>>>>>22");
+
+        ref.read(chatControllerProvider).setChatMessageSeen(
+              context,
+              widget.receiverUserid,
+              messageData.messageId,
+            );
+      }
     }
     if (messageData.senderId == FirebaseAuth.instance.currentUser!.uid) {
       return MyMessageCard(
@@ -229,4 +253,57 @@ deleteMessageList(String receiverUserId, String messageId) async {
       .collection('messages')
       .doc(messageId)
       .delete();
+}
+
+Shimmer tripInfoShimmer(BuildContext context) {
+  SizeConfig().init(context);
+  return Shimmer.fromColors(
+      child: ListView.builder(
+        itemCount: 10,
+        physics: const BouncingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(16),
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    height: getProportionateScreenHeight(60),
+                    width: getProportionateScreenWidth(120),
+                  ),
+                ),
+                const VerticalBox(height: 16),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(16),
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                    ),
+                    height: getProportionateScreenHeight(60),
+                    width: getProportionateScreenWidth(120),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!);
 }

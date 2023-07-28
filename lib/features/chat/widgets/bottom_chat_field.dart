@@ -21,11 +21,13 @@ import '../../interner_connectivity/controller/internet_connection_controller.da
 class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
   final bool isGroupChat;
+  final List memberId;
   // final int memberId;
   const BottomChatField({
     Key? key,
     required this.recieverUserId,
     required this.isGroupChat,
+    required this.memberId,
     // required this.memberId,
   }) : super(key: key);
 
@@ -147,6 +149,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
   sentTextMessage() {
     if (isShowSendButton) {
       ref.read(chatControllerProvider).sentTextMessage(
+          widget.memberId,
           context,
           _messageController.text.trim(),
           widget.recieverUserId,

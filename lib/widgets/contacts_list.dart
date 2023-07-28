@@ -4,8 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:whatsapp_ui/common/config/size_config.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
-import 'package:whatsapp_ui/common/widgets/loader.dart';
+import 'package:whatsapp_ui/common/widgets/box/horizontal_box.dart';
+import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
+import 'package:whatsapp_ui/common/widgets/shimmer/shimmer.dart';
 import 'package:whatsapp_ui/features/chat/controller/chat_controller.dart';
 import 'package:whatsapp_ui/features/chat/screens/mobile_chat_screen.dart';
 import 'package:whatsapp_ui/model/chat_contact.dart';
@@ -98,11 +101,7 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                       builder: (context, groupSnapshot) {
                         if (groupSnapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                                top: MediaQuery.of(context).size.height * 0.4),
-                            child: const Loader(),
-                          );
+                          return contactsShimmer(context);
                         }
                         final List<model.Group> groups =
                             groupSnapshot.data ?? [];
@@ -113,12 +112,7 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                           builder: (context, contactSnapshot) {
                             if (contactSnapshot.connectionState ==
                                 ConnectionState.waiting) {
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                    top: MediaQuery.of(context).size.height *
-                                        0.4),
-                                child: const Loader(),
-                              );
+                              return contactsShimmer(context);
                             }
                             final List<ChatContact> contacts =
                                 contactSnapshot.data ?? [];
@@ -228,18 +222,175 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                               ),
                                             ),
                                           ),
-                                          trailing: isSelected == true
-                                              ? const Icon(
-                                                  Icons.delete,
-                                                  color: Colors.red,
-                                                )
-                                              : Text(
+                                          trailing: StreamBuilder<
+                                              QuerySnapshot<
+                                                  Map<String, dynamic>>>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection("groups")
+                                                .doc(data.groupId)
+                                                .collection("chats")
+                                                .doc(FirebaseAuth
+                                                    .instance.currentUser!.uid)
+                                                .collection("users")
+                                                .orderBy('timeSent',
+                                                    descending: true)
+                                                .limit(1)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                var messageData =
+                                                    snapshot.data!.docs;
+
+                                                if (messageData.isNotEmpty) {
+                                                  // Check if the list is not empty
+                                                  final List<Message> messages =
+                                                      messageData
+                                                          .map((e) =>
+                                                              Message.fromMap(
+                                                                  e.data()))
+                                                          .toList();
+
+                                                  DateTime timeSent =
+                                                      messages[0].timeSent;
+                                                  DateTime currentDate =
+                                                      DateTime.now();
+                                                  DateTime yesterdayDate =
+                                                      currentDate.subtract(
+                                                          const Duration(
+                                                              days: 1));
+
+                                                  timeForChat(timeSent);
+
+                                                  if (messages.isNotEmpty) {
+                                                    _message = messages[0];
+                                                  }
+
+                                                  if (FirebaseAuth.instance
+                                                          .currentUser!.uid ==
+                                                      _message?.senderId) {
+                                                    return Text(
+                                                      changeTime!,
+                                                      style: const TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 13),
+                                                    );
+                                                  } else if (_message == null) {
+                                                    return const SizedBox
+                                                        .shrink();
+                                                  } else if (_message!.isSeen) {
+                                                    return Text(
+                                                      changeTime!,
+                                                      style: const TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 13),
+                                                    );
+                                                  } else {
+                                                    return Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        Text(
+                                                          changeTime!,
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .red),
+                                                        ),
+                                                        StreamBuilder<
+                                                            QuerySnapshot<
+                                                                Map<String,
+                                                                    dynamic>>>(
+                                                          stream: FirebaseFirestore
+                                                              .instance
+                                                              .collection(
+                                                                  "groups")
+                                                              .doc(data.groupId)
+                                                              .collection(
+                                                                  "chats")
+                                                              .doc(FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .uid)
+                                                              .collection(
+                                                                  "users")
+                                                              .snapshots(),
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            if (snapshot
+                                                                .hasData) {
+                                                              int trueMessagesCount =
+                                                                  0;
+                                                              final messages =
+                                                                  snapshot.data!
+                                                                      .docs;
+                                                              // Count the number of messages with isSeen = true
+                                                              for (final message
+                                                                  in messages) {
+                                                                final isSeen =
+                                                                    message.data()[
+                                                                        'isSeen'];
+                                                                if (isSeen ==
+                                                                    false) {
+                                                                  trueMessagesCount++;
+                                                                }
+                                                              }
+                                                              return CircleAvatar(
+                                                                radius: 10,
+                                                                backgroundColor:
+                                                                    const Color
+                                                                            .fromRGBO(
+                                                                        237,
+                                                                        84,
+                                                                        60,
+                                                                        1),
+                                                                child: Text(
+                                                                  trueMessagesCount
+                                                                      .toString(),
+                                                                  style: const TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                              );
+                                                            } else {
+                                                              return const CircularProgressIndicator();
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
+                                                } else {
+                                                  return Text(
+                                                    time!,
+                                                    style: const TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 13),
+                                                  );
+                                                }
+                                              } else {
+                                                return Text(
                                                   time!,
                                                   style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 13,
-                                                  ),
-                                                ),
+                                                      color: Colors.grey,
+                                                      fontSize: 13),
+                                                );
+                                              }
+                                            },
+                                          ),
+
+                                          // isSelected == true
+                                          //     ? const Icon(
+                                          //         Icons.delete,
+                                          //         color: Colors.red,
+                                          //       )
+                                          //     : Text(
+                                          //         time!,
+                                          //         style: const TextStyle(
+                                          //           color: Colors.grey,
+                                          //           fontSize: 13,
+                                          //         ),
+                                          //       ),
                                         ),
                                       ),
                                       const Divider(
@@ -573,6 +724,64 @@ class _ContactsListState extends ConsumerState<ContactsList> {
       ],
     );
   }
+}
+
+Shimmer contactsShimmer(BuildContext context) {
+  SizeConfig().init(context);
+  return Shimmer.fromColors(
+      child: ListView.builder(
+        itemCount: 20,
+        physics: const BouncingScrollPhysics(),
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12)),
+                  height: getProportionateScreenHeight(50),
+                  width: getProportionateScreenWidth(50),
+                ),
+                const HorizontalBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16)),
+                      height: getProportionateScreenHeight(10),
+                      width: getProportionateScreenWidth(120),
+                    ),
+                    const VerticalBox(height: 16),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16)),
+                      height: getProportionateScreenHeight(10),
+                      width: getProportionateScreenWidth(200),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16)),
+                  height: getProportionateScreenHeight(10),
+                  width: getProportionateScreenWidth(50),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!);
 }
 
 // class ContactsList extends ConsumerWidget {
