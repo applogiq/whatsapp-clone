@@ -146,7 +146,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
         payload: 'foreground_notification');
   }
 
-  sentTextMessage() {
+  sentTextMessage() async {
     if (isShowSendButton) {
       ref.read(chatControllerProvider).sentTextMessage(
           widget.memberId,
@@ -158,13 +158,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
       _messageController.text = '';
       isShowSendButton = false;
 
-      // await FirebaseFirestore.instance
-      //     .collection("users")
-      //     .doc(FirebaseAuth.instance.currentUser!.uid)
-      //     .collection('chats')
-      //     .doc(widget.recieverUserId)
-      //     .update({'isTyping': false});
-      // setState(() {});
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('chats')
+          .doc(widget.recieverUserId)
+          .update({'isTyping': false});
+      setState(() {});
     }
   }
 
@@ -293,22 +293,28 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
                       controller: _messageController,
                       onChanged: (val) async {
                         if (val.isEmpty) {
-                          // await FirebaseFirestore.instance
-                          //     .collection("users")
-                          //     .doc(FirebaseAuth.instance.currentUser!.uid)
-                          //     .collection('chats')
-                          //     .doc(widget.recieverUserId)
-                          //     .update({'isTyping': false});
+                          // try {
+
+                          // } catch (e) {
+                          //   if (mounted) {
+                          //     setState(() {
+                          //       isShowSendButton = false;
+                          //     });
+                          //   }
+                          // }
                           setState(() {
                             isShowSendButton = false;
                           });
                         } else {
-                          // await FirebaseFirestore.instance
-                          //     .collection("users")
-                          //     .doc(FirebaseAuth.instance.currentUser!.uid)
-                          //     .collection('chats')
-                          //     .doc(widget.recieverUserId)
-                          //     .update({'isTyping': true});
+                          // try {
+
+                          // } catch (e) {
+                          //   if (mounted) {
+                          //     setState(() {
+                          //       isShowSendButton = true;
+                          //     });
+                          //   }
+                          // }
                           setState(() {
                             isShowSendButton = true;
                           });

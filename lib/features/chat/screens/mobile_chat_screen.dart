@@ -111,6 +111,7 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
                               widget.name,
@@ -118,6 +119,58 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                                   .copyWith(fontSize: 20),
                               overflow: TextOverflow.ellipsis,
                             ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(25),
+                              child: StreamBuilder<
+                                  QuerySnapshot<Map<String, dynamic>>>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  }
+
+                                  final userList = snapshot.data?.docs ?? [];
+
+                                  return ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    physics: const BouncingScrollPhysics(),
+                                    itemCount: widget.memberIdList!.length,
+                                    itemBuilder: (context, index) {
+                                      final memberId =
+                                          widget.memberIdList![index];
+                                      final user = userList.firstWhere(
+                                          (userDoc) => userDoc.id == memberId);
+                                      if (user != null) {
+                                        if (user.data().containsKey('name')) {
+                                          return Text(
+                                            "${user['name']} ,",
+                                            style: authScreensubTitleStyle(),
+                                          );
+                                        } else {
+                                          return Text(
+                                            'error',
+                                            style: authScreensubTitleStyle(),
+                                          );
+                                        }
+                                      } else {
+                                        return Text(
+                                          'error',
+                                          style: authScreensubTitleStyle(),
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                            )
                           ],
                         ),
                       ),
@@ -176,73 +229,75 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                                   ),
                                   // const VerticalBox(height: 4),
                                   const HorizontalBox(width: 5),
-                                  Text(
-                                      snapshot.data!.isOnline
-                                          ? 'Online'
-                                          : snapshot.data!.lastSeen,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        overflow: TextOverflow.ellipsis,
-                                        fontWeight: FontWeight.normal,
-                                        color: Color.fromRGBO(118, 112, 109, 1),
-                                      )),
-                                  // StreamBuilder<Object>(
-                                  //   stream: FirebaseFirestore.instance
-                                  //       .collection('users')
-                                  //       .doc(uid)
-                                  //       .collection('chats')
-                                  //       .doc(FirebaseAuth.instance.currentUser!
-                                  //           .uid) // Replace chatRoomId with the appropriate identifier for the current chat room
-                                  //       .snapshots(),
-                                  //   builder: (context, snapshots) {
-                                  //     if (snapshots.connectionState ==
-                                  //         ConnectionState.waiting) {
-                                  //       return const Text("");
-                                  //     }
-                                  //     if (!snapshots.hasData ||
-                                  //         snapshots.data == null) {
-                                  //       return const Text(
-                                  //           ""); // Return an empty widget or show an error message
-                                  //     }
+                                  // Text(
+                                  //     snapshot.data!.isOnline
+                                  //         ? 'Online'
+                                  //         : snapshot.data!.lastSeen,
+                                  //     style: const TextStyle(
+                                  //       fontSize: 10,
+                                  //       overflow: TextOverflow.ellipsis,
+                                  //       fontWeight: FontWeight.normal,
+                                  //       color: Color.fromRGBO(118, 112, 109, 1),
+                                  //     )),
+                                  StreamBuilder<Object>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(widget.uid)
+                                        .collection('chats')
+                                        .doc(FirebaseAuth.instance.currentUser!
+                                            .uid) // Replace chatRoomId with the appropriate identifier for the current chat room
+                                        .snapshots(),
+                                    builder: (context, snapshots) {
+                                      if (snapshots.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Text("");
+                                      }
+                                      if (!snapshots.hasData ||
+                                          snapshots.data == null) {
+                                        return const Text(
+                                            ""); // Return an empty widget or show an error message
+                                      }
 
-                                  //     var data = snapshots.data!
-                                  //         as DocumentSnapshot<
-                                  //             Map<String, dynamic>>;
+                                      var data = snapshots.data!
+                                          as DocumentSnapshot<
+                                              Map<String, dynamic>>;
 
-                                  //     if (data.exists) {
-                                  //       return data['isTyping'] == true
-                                  //           ? Text(
-                                  //               "Typing....",
-                                  //               style: authScreensubTitleStyle(),
-                                  //             )
-                                  //           : Text(
-                                  //               snapshot.data!.isOnline
-                                  //                   ? 'Online'
-                                  //                   : snapshot.data!.lastSeen,
-                                  //               style: const TextStyle(
-                                  //                 fontSize: 10,
-                                  //                 overflow: TextOverflow.ellipsis,
-                                  //                 fontWeight: FontWeight.normal,
-                                  //                 color: Color.fromRGBO(
-                                  //                     118, 112, 109, 1),
-                                  //               ),
-                                  //             );
-                                  //     } else {
-                                  //       // Handle the case when the document doesn't exist
-                                  //       return Text(
-                                  //           snapshot.data!.isOnline
-                                  //               ? 'Online'
-                                  //               : snapshot.data!.lastSeen,
-                                  //           style: const TextStyle(
-                                  //             fontSize: 10,
-                                  //             overflow: TextOverflow.ellipsis,
-                                  //             fontWeight: FontWeight.normal,
-                                  //             color: Color.fromRGBO(
-                                  //                 118, 112, 109, 1),
-                                  //           ));
-                                  //     }
-                                  //   },
-                                  // ),
+                                      if (data.exists) {
+                                        return data['isTyping'] == true
+                                            ? Text(
+                                                "Typing....",
+                                                style:
+                                                    authScreensubTitleStyle(),
+                                              )
+                                            : Text(
+                                                snapshot.data!.isOnline
+                                                    ? 'Online'
+                                                    : snapshot.data!.lastSeen,
+                                                style: const TextStyle(
+                                                  fontSize: 10,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Color.fromRGBO(
+                                                      118, 112, 109, 1),
+                                                ),
+                                              );
+                                      } else {
+                                        // Handle the case when the document doesn't exist
+                                        return Text(
+                                            snapshot.data!.isOnline
+                                                ? 'Online'
+                                                : snapshot.data!.lastSeen,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              overflow: TextOverflow.ellipsis,
+                                              fontWeight: FontWeight.normal,
+                                              color: Color.fromRGBO(
+                                                  118, 112, 109, 1),
+                                            ));
+                                      }
+                                    },
+                                  ),
 
                                   const VerticalBox(height: 5),
                                 ],
