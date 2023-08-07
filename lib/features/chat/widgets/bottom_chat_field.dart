@@ -2,7 +2,7 @@ import 'dart:io';
 
 // import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -111,13 +111,13 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       print("object");
-      // When the app is paused or inactive, update isTyping to false
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('chats')
-          .doc(widget.recieverUserId)
-          .update({'isTyping': false});
+      // // When the app is paused or inactive, update isTyping to false
+      // await FirebaseFirestore.instance
+      //     .collection("users")
+      //     .doc(FirebaseAuth.instance.currentUser!.uid)
+      //     .collection('chats')
+      //     .doc(widget.recieverUserId)
+      //     .update({'isTyping': false});
       ref.read(authControllerProvider).setuserState(false);
     }
   }
@@ -158,12 +158,12 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
       _messageController.text = '';
       isShowSendButton = false;
 
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection('chats')
-          .doc(widget.recieverUserId)
-          .update({'isTyping': false});
+      // await FirebaseFirestore.instance
+      //     .collection("users")
+      //     .doc(FirebaseAuth.instance.currentUser!.uid)
+      //     .collection('chats')
+      //     .doc(widget.recieverUserId)
+      //     .update({'isTyping': false});
       setState(() {});
     }
   }
@@ -172,11 +172,19 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
     File file,
     MessageEnum messageEnum,
   ) {
+    print("123456 1");
+
     ref.read(chatControllerProvider).sentFileMessage(
-        context, file, widget.recieverUserId, messageEnum, widget.isGroupChat);
+        context,
+        file,
+        widget.memberId,
+        widget.recieverUserId,
+        messageEnum,
+        widget.isGroupChat);
   }
 
   void selectImage() async {
+    print("123456");
     File? image = await pickImageFromGallery(context);
     if (image != null) {
       sendFileMessage(image, MessageEnum.image);
@@ -195,6 +203,16 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
       isContainerVisible = false;
     });
   }
+
+  // selectDocument() async {
+  //   FilePickerResult? result = await FilePicker.platform
+  //       .pickFiles(type: FileType.custom, allowedExtensions: ['pdf', 'doc']);
+  //   if (result != null) {
+  //     print("❤️❤️❤️");
+  //   } else {
+  //     print("❤️❤️❤️123");o
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -24,6 +24,7 @@ class GroupRepository {
       {required this.fireStore, required this.auth, required this.ref});
   void createGroup(BuildContext context, String name, File profilePic,
       List<Contact> selectedConntact) async {
+    print("🙌🙌🙌🙌${profilePic.toString()}");
     try {
       List<String> uids = [];
       List<String> deviceTokens = [];

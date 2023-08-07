@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
@@ -34,18 +36,42 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     setState(() {});
   }
 
-  void createGroup() {
-    print(groupNameController.text.trim().isNotEmpty);
-    print(image != null);
-    print("1");
+  Future<File> getAssetFile(String assetPath) async {
+    // Get the app's document directory
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+
+    // Create a unique file name
+    String fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
+
+    // Copy the asset to the app's document directory
+    File assetFile = File('$appDocPath/$fileName');
+    ByteData data = await rootBundle.load(assetPath);
+    await assetFile.writeAsBytes(data.buffer.asUint8List());
+
+    return assetFile;
+  }
+
+  void createGroup() async {
     try {
       if (groupNameController.text.trim().isNotEmpty && image != null) {
         print("2");
-
         ref.read(groupControllerprovider).createGroup(
             context,
             groupNameController.text.trim(),
             image!,
+            ref.read(selectedContactGroups));
+        ref.read(selectedContactGroups.state).update((state) => []);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MobileLayoutScreen()));
+      } else if (groupNameController.text.trim().isNotEmpty && image == null) {
+        print("5");
+        ref.read(groupControllerprovider).createGroup(
+            context,
+            groupNameController.text.trim(),
+            await getAssetFile('assets/gb.png'),
             ref.read(selectedContactGroups));
         ref.read(selectedContactGroups.state).update((state) => []);
         Navigator.push(
@@ -107,8 +133,9 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                       children: [
                         image == null
                             ? const CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  'https://s3.amazonaws.com/37assets/svn/765-default-avatar.png',
+                                backgroundColor: Colors.grey,
+                                backgroundImage: AssetImage(
+                                  'assets/gb.png',
                                 ),
                                 radius: 80,
                               )

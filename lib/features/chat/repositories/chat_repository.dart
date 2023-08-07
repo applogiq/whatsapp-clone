@@ -111,6 +111,8 @@ class ChatRepository {
       String receiveruserId,
       bool isGroupChat) async {
     if (isGroupChat) {
+      print("123456 4");
+
       await firestore.collection('groups').doc(receiveruserId).update({
         'lastMessage': text,
         'timeSent': DateTime.now().millisecondsSinceEpoch
@@ -157,6 +159,7 @@ class ChatRepository {
     required List memberList,
     required bool isGroupChat,
   }) async {
+    print("1234567890");
     for (String member in memberList) {
       final Map<String, dynamic> memberListMap = {member: false};
       final message = isGroupChat
@@ -168,7 +171,6 @@ class ChatRepository {
               timeSent: timeSent,
               messageId: messageId,
               isSeen: false,
-              additionalData: memberListMap,
             )
           : Message(
               senderId: auth.currentUser!.uid,
@@ -221,6 +223,8 @@ class ChatRepository {
       required MessageEnum messagetype,
       required List memberList,
       required bool isGroupChat}) async {
+    print("123456 6");
+
     final Map<String, dynamic> memberListMap = {};
     for (String member in memberList) {
       memberListMap[member] = false;
@@ -245,6 +249,8 @@ class ChatRepository {
             isSeen: false,
           );
     if (isGroupChat) {
+      print("123456 7");
+
       await firestore
           .collection('groups')
           .doc(receiverUserId)
@@ -343,7 +349,10 @@ class ChatRepository {
       required UserModel senderUserData,
       required ProviderRef ref,
       required MessageEnum messageEnum,
-      required bool isGroupChat}) async {
+      required bool isGroupChat,
+      required List groupMemberId}) async {
+    print("123456 3");
+
     // print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
 
     try {
@@ -393,16 +402,27 @@ class ChatRepository {
       }
       _saveDataToContactSubCollection(senderUserData, receiverUserData,
           contactMsg, timeSent, receiverUserId, isGroupChat);
-      _saveMessagetoMessageSubCollection(
-          memberList: [],
-          receiverUserId: receiverUserId,
-          text: imageUrl,
-          timeSent: timeSent,
-          messageId: messageId,
-          username: senderUserData.name,
-          receiverUserName: receiverUserData?.name,
-          isGroupChat: isGroupChat,
-          messagetype: messageEnum);
+      isGroupChat
+          ? _groupsaveMessagetoMessageSubCollection(
+              memberList: groupMemberId,
+              isGroupChat: isGroupChat,
+              receiverUserId: receiverUserId,
+              text: imageUrl,
+              timeSent: timeSent,
+              messagetype: messageEnum,
+              messageId: messageId,
+              receiverUserName: receiverUserData?.name,
+              username: senderUserData.name)
+          : _saveMessagetoMessageSubCollection(
+              memberList: [],
+              receiverUserId: receiverUserId,
+              text: imageUrl,
+              timeSent: timeSent,
+              messageId: messageId,
+              username: senderUserData.name,
+              receiverUserName: receiverUserData?.name,
+              isGroupChat: isGroupChat,
+              messagetype: messageEnum);
     } catch (e) {
       print(e.toString());
       showSnackBar(context: context, content: e.toString());

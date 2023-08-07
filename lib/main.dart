@@ -24,6 +24,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // disableScreenRecordingAndScreenshots();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   // PushNotification().setupFirebaseMessaging("Head", "Sub");
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   getDeviceToken();

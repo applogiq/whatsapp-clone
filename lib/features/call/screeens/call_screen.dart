@@ -72,16 +72,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     await engine.setChannelProfile(ChannelProfile.Communication);
     engine.setEventHandler(RtcEngineEventHandler(
       joinChannelSuccess: (channel, uid, elapsed) {
-        print("Success");
+        // Future.delayed(const Duration(minutes: 1), oncallEnd);
       },
       userJoined: (uid, elapsed) {
-        print("userJoined$uid");
+        print("9095userJoined$uid");
         setState(() {
           remoteUIDs.add(uid);
         });
       },
       userOffline: (uid, reason) {
-        print("userOffline$uid");
+        print("9095userOffline$uid");
         setState(() {
           remoteUIDs.remove(uid);
           Navigator.pop(context);
@@ -152,10 +152,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                 yPosition += tapinfo.delta.dy;
                               });
                             },
-                            child: const SizedBox(
+                            child: SizedBox(
                                 height: 200,
                                 width: 130,
-                                child: RtcLocalview.SurfaceView()),
+                                child: widget.isAudioCall
+                                    ? const SizedBox.shrink()
+                                    : const RtcLocalview.SurfaceView()),
                           )),
                       _toolBar(),
                     ],

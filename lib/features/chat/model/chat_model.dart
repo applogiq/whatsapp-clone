@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,12 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:whatsapp_ui/common/utils/utils.dart';
 
 class PushNotification {
-  // print("💕");
-
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   PushNotification() {
-    // Initialize the plugin in the constructor
     const initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     // final initializationSettingsIOS = IOSInitializationSettings();
@@ -20,12 +18,26 @@ class PushNotification {
       android: initializationSettingsAndroid,
     );
 
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+        switch (notificationResponse.notificationResponseType) {
+          case NotificationResponseType.selectedNotification:
+            break;
+          case NotificationResponseType.selectedNotificationAction:
+            if (notificationResponse.actionId == 'id1') {
+            } else if (notificationResponse.actionId == 'id2') {
+              print("Jilla");
+            }
+            break;
+        }
+      },
+    );
   }
+
   setupFirebaseMessaging(String head, String sub) {
     try {
-      print("💕1");
-
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         print(
             '💕💕💕💕💕💕💕💕💕💕💕💕💕Received message while app is in the foreground: ${message.notification}');
@@ -40,6 +52,7 @@ class PushNotification {
 
   Future<void> showNotification(String head, String sub) async {
     print("💕2");
+//  AndroidBitmap androidIcon = AndroidBitmap(); // Replace with the drawable resource name
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -49,12 +62,33 @@ class PushNotification {
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
       ticker: 'ticker',
+      actions: [
+        AndroidNotificationAction(
+          "id1",
+          "Accept",
+          titleColor: Colors.green,
+          showsUserInterface: true,
+          cancelNotification: false,
+        ),
+        AndroidNotificationAction(
+          "id2",
+          "Decline",
+          titleColor: Colors.red,
+          showsUserInterface: true,
+          cancelNotification: false,
+        ),
+      ],
+      ongoing: true,
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    flutterLocalNotificationsPlugin.show(0, head, sub, platformChannelSpecifics,
+    await flutterLocalNotificationsPlugin.show(
+        0, head, sub, platformChannelSpecifics,
         payload: 'foreground_notification');
+    Timer(const Duration(minutes: 1), () async {
+      await flutterLocalNotificationsPlugin.cancel(0);
+    });
   }
 
   Future<void> sendPushNotification(

@@ -120,8 +120,10 @@ class ChatController {
   //           sendUser: value!));
   // }
 
-  Future<void> sentFileMessage(BuildContext context, File file,
+  Future<void> sentFileMessage(BuildContext context, File file, List memberid,
       String receiverUserId, MessageEnum messageEnum, bool isGroupChat) async {
+    print("123456 2");
+
     UserModel? user;
 
     Future<UserModel?> getCurrentUserData() async {
@@ -145,6 +147,7 @@ class ChatController {
     if (user != null) {
       try {
         chatRepository.sendFileMessage(
+            groupMemberId: memberid,
             isGroupChat: isGroupChat,
             context: context,
             file: file,

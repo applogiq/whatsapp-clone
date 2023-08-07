@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +84,11 @@ class CallController {
       } else {
         callRepository.makeCall(
             senderCallData, context, receiverCallData, isAudioCall);
+        // Timer(const Duration(minutes: 1), () async {
+        //   print("Error");
+
+        // callRepository.endCall(callId, receiverUid, context);
+        // });
       }
     } else {
       print("Error");
