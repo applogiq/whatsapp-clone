@@ -24,7 +24,6 @@ class GroupRepository {
       {required this.fireStore, required this.auth, required this.ref});
   void createGroup(BuildContext context, String name, File profilePic,
       List<Contact> selectedConntact) async {
-    print("🙌🙌🙌🙌${profilePic.toString()}");
     try {
       List<String> uids = [];
       List<String> deviceTokens = [];
@@ -45,6 +44,7 @@ class GroupRepository {
         }
       }
       var groupId = const Uuid().v1();
+      // ignore: unused_local_variable
       var deviceToken =
           "e-8TOoX7Tz-1DOw7HUmBH5:APA91bG16a9mQkD7H-tb5FnDPhwCupiPTNHZvC_t5EmcWk0za9a-8B9Q_F5I4Wzw8ugrIFo6_jaTolqKn4OAa3FxtG6Ql5dN4_TiPUtjUvyNVu3rX1D94eUxktrJ9v65nmljlNOpzl2D";
       String profileUrl = await ref
@@ -65,13 +65,13 @@ class GroupRepository {
     }
   }
 
-  getgroupContactUser() async {
+  getgroupContactUser(BuildContext ctx) async {
     try {
       var groupId = const Uuid().v1();
 
       fireStore.collection('groups').doc(groupId).snapshots();
     } catch (e) {
-      print(e.toString());
+      showSnackBar(context: ctx, content: e.toString());
     }
   }
 }

@@ -27,9 +27,6 @@ class CallRepository {
   void makeCall(Call senderCallData, BuildContext context,
       Call receiversCallData, bool isAudioCall) async {
     try {
-      print("❤️");
-      print(senderCallData.isInCommingCall);
-      print(receiversCallData.isInCommingCall);
       await fireStore
           .collection('call')
           .doc(senderCallData.callerId)
@@ -95,9 +92,7 @@ class CallRepository {
   ) async {
     try {
       await fireStore.collection('call').doc(callerId).delete();
-      // var groupSnapShot =
-      //     await fireStore.collection('groups').doc(receiverId).get();
-      // model.Group group = model.Group.fromMap(groupSnapShot.data()!);
+
       await fireStore.collection('call').doc(receiverId).delete();
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
@@ -128,7 +123,7 @@ class CallRepository {
 
       fireStore.collection('groups').doc(groupId).snapshots();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 }

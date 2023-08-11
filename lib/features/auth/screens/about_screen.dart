@@ -43,23 +43,17 @@ class _AboutScreenState extends State<AboutScreen> {
 
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const ProfileScreen()));
-    }).catchError((error) {
-      // Handle update error
-      print('Error updating about status: $error');
-    });
+    }).catchError((error) {});
   }
 
   @override
   void initState() {
     super.initState();
-    _aboutStatusController.text =
-        ""; // Add your code to fetch the current about status here
+    _aboutStatusController.text = "";
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-
     _aboutStatusController.dispose();
     super.dispose();
   }
@@ -197,25 +191,3 @@ class _AboutScreenState extends State<AboutScreen> {
     );
   }
 }
-
-
-
-  // getCurrentUserAboutStatus() {
-  //   FirebaseFirestore.instance
-  //       .collection("users")
-  //       .doc(FirebaseAuth.instance.currentUser?.uid)
-  //       .get()
-  //       .then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
-  //     if (snapshot.exists) {
-  //       var userData = snapshot.data();
-  //       aboutStatus = userData?['aboutStatus'];
-  //       print("User's about status: $aboutStatus");
-  //       // Do whatever you need with the about status value
-  //     } else {
-  //       aboutStatus = "Hey there i am using Applogiq";
-  //     }
-  //   }).catchError((error) {
-  //     print("Error retrieving user data: $error");
-  //   });
-  //   setState(() {});
-  // }

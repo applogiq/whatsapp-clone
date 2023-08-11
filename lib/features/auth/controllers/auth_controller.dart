@@ -24,12 +24,7 @@ class AuthController {
     required this.ref,
   });
   Future<UserModel?> getUserData() async {
-    print("😂😂😂😂no2");
-    // print("😂😂😂😂no2");
-
     UserModel? user = await authRepository.getCurrentUserData();
-    // print(user!.name);
-    // print(user.isOnline);
     return user;
   }
 

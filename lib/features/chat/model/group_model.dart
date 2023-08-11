@@ -11,8 +11,6 @@ class GroupPushNotification {
       FlutterLocalNotificationsPlugin();
   setupFirebaseMessaging(String head, String sub) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-          'Received message while app is in the foreground: ${message.notification}');
       showNotification(head, sub);
     });
   }

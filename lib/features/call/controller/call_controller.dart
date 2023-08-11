@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/features/call/repository/call_repository.dart';
 
 import 'package:whatsapp_ui/model/call.dart';
@@ -46,7 +47,7 @@ class CallController {
         try {
           user = UserModel.fromMap(userdata.data()!);
         } catch (e) {
-          print(e.toString());
+          showSnackBar(context: context, content: e.toString());
         }
       }
       return user;
@@ -84,15 +85,8 @@ class CallController {
       } else {
         callRepository.makeCall(
             senderCallData, context, receiverCallData, isAudioCall);
-        // Timer(const Duration(minutes: 1), () async {
-        //   print("Error");
-
-        // callRepository.endCall(callId, receiverUid, context);
-        // });
       }
-    } else {
-      print("Error");
-    }
+    } else {}
   }
 
   void endCall(String callerid, String receiverId, BuildContext context) {

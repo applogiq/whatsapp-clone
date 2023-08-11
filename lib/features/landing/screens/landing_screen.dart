@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_ui/colors.dart';
 import 'package:whatsapp_ui/features/auth/screens/login_screen.dart';
 import 'package:whatsapp_ui/features/interner_connectivity/screen/no_internet_screen.dart';
@@ -98,13 +99,22 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                                         fontWeight: FontWeight.w500,
                                         color: Color.fromRGBO(5, 31, 50, 0.6))),
                               ),
-                              Text(
-                                ' privacy policy. ',
-                                style: GoogleFonts.manrope(
-                                    textStyle: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color.fromRGBO(58, 97, 234, 1))),
+                              InkWell(
+                                onTap: () async {
+                                  var website = Uri.parse(
+                                      'https://www.applogiq.org/privacy-policy');
+                                  launchUrl(website,
+                                      mode: LaunchMode.externalApplication);
+                                },
+                                child: Text(
+                                  ' privacy policy. ',
+                                  style: GoogleFonts.manrope(
+                                      textStyle: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color:
+                                              Color.fromRGBO(58, 97, 234, 1))),
+                                ),
                               ),
                               Text(
                                 'By clicking continue',
@@ -159,14 +169,6 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                         ],
                       ),
                     ),
-
-                    // SizedBox(
-                    //   width: size.width * 0.75,
-                    //   child: CustomButton(
-                    //     text: 'Get Started',
-                    //     onPressed: () => navigateToLoginScreen(context),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

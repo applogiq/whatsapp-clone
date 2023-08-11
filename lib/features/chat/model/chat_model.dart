@@ -27,9 +27,7 @@ class PushNotification {
             break;
           case NotificationResponseType.selectedNotificationAction:
             if (notificationResponse.actionId == 'id1') {
-            } else if (notificationResponse.actionId == 'id2') {
-              print("Jilla");
-            }
+            } else if (notificationResponse.actionId == 'id2') {}
             break;
         }
       },
@@ -39,21 +37,14 @@ class PushNotification {
   setupFirebaseMessaging(String head, String sub) {
     try {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-        print(
-            '💕💕💕💕💕💕💕💕💕💕💕💕💕Received message while app is in the foreground: ${message.notification}');
         await showNotification(head, sub);
       });
     } catch (e) {
-      print("💕6");
-
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 
   Future<void> showNotification(String head, String sub) async {
-    print("💕2");
-//  AndroidBitmap androidIcon = AndroidBitmap(); // Replace with the drawable resource name
-
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'your_channel_id',
@@ -93,8 +84,6 @@ class PushNotification {
 
   Future<void> sendPushNotification(
       String deviceToken, String title, String body, BuildContext ctx) async {
-    print("💕3");
-
     try {
       String serverKey =
           // 'dSuRkgdFStK5TCSmwmRdPB:APA91bF59P6A1gyJb-QGU-WAE8IJUtKhNedHzklPEZcSMyc82TjlLNtd6_T5HqmOpkfSNIOpskSQA6s_Ur1DpwVr0p_RBIaK-euQme-qg3IGZcHSi9aV36mP8qv-B2HF4F_nkXXdfwuh';
@@ -126,16 +115,9 @@ class PushNotification {
           headers: headers, body: jsonEncode(payload));
 
       if (response.statusCode == 200) {
-        print("💕4");
         await setupFirebaseMessaging(title, body);
-      } else {
-        print(
-            "Failed to send notification. Status code: ${response.statusCode}");
-        print("💕💕5");
-      }
+      } else {}
     } catch (e) {
-      print("💕6");
-
       showSnackBar(context: ctx, content: e.toString());
     }
   }

@@ -53,9 +53,6 @@ class _MyMessageCardState extends State<MyMessageCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPress: () {
-        print("Dei");
-        print(widget.receiverId);
-        print(widget.messageId);
         setState(() {
           isSelected = true;
         });

@@ -46,13 +46,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                                 PlayerPage(videoUrl: widget.videoUrl)));
                     if (isPlay) {
                       videoPlayerController.pause();
-                    } else {
-                      print(isPlay);
-                      // videoPlayerController.play();
-                    }
-                    // setState(() {
-                    //   isPlay = !isPlay;
-                    // });
+                    } else {}
                   },
                   icon: Icon(
                     isPlay ? Icons.pause : Icons.play_circle,

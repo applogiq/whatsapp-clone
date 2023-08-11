@@ -18,14 +18,6 @@ TextStyle textFieldHeadingStyle() => TextStyle(
     color: const Color.fromRGBO(27, 16, 11, 0.6),
     fontSize: getProportionateScreenWidth(14));
 
-// errorstyle constant textstyle
-// TextStyle errorStyle() => TextStyle(
-//     fontWeight: FontWeight.w500,
-//     color: CustomColor.errorFieldColor,
-//     fontSize: getProportionateScreenWidth(14));
-// TextStyle headingTextStyle() => TextStyle(
-//     fontWeight: FontWeight.w600, fontSize: getProportionateScreenWidth(36));
-
 TextStyle pinStyle = TextStyle(
     fontSize: getProportionateScreenWidth(24), fontWeight: FontWeight.bold);
 

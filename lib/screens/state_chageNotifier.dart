@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, unused_local_variable
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,10 +18,6 @@ class TodosNotifier extends ChangeNotifier {
   getgroupContacts() async {
     var groupId = fireStore!.collection('groups').snapshots();
   }
-  //  disableScreenRecord() async{
-  //   isScreenRecording =  (await FlutterScreenRecording.startRecordScreen(true)) as String;
-
-  // }
 }
 
 final totoProvider = ChangeNotifierProvider<TodosNotifier>((ref) {

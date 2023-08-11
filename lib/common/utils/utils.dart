@@ -13,7 +13,6 @@ void showSnackBar({required BuildContext context, required String content}) {
 
 Future<File?> pickImageFromGallery(BuildContext context) async {
   File? image;
-  // final imageProvider = StateProviderFamily<File, int>((ref, _) => throw UnimplementedError());
 
   try {
     final pickedImage =

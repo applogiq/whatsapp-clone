@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +25,7 @@ class ContactsList extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _ContactsListState();
 }
 
+// +919976369309
 class _ContactsListState extends ConsumerState<ContactsList> {
   FirebaseFirestore? firestore;
   Message? _message;
@@ -40,15 +43,12 @@ class _ContactsListState extends ConsumerState<ContactsList> {
         timeSent.month == currentDate.month &&
         timeSent.day == currentDate.day) {
       time = DateFormat('h:mm a').format(timeSent);
-      print("123$time");
     } else if (timeSent.year == yesterdayDate.year &&
         timeSent.month == yesterdayDate.month &&
         timeSent.day == yesterdayDate.day) {
       time = 'Yesterday';
-      print('Yesterday');
     } else {
       time = DateFormat('MMM d, h:mm a').format(timeSent);
-      print("321$time");
     }
   }
 
@@ -60,28 +60,18 @@ class _ContactsListState extends ConsumerState<ContactsList> {
     if (timeSent.year == currentDate.year &&
         timeSent.month == currentDate.month &&
         timeSent.day == currentDate.day) {
-      print("ram 2");
-
       changeTime = DateFormat('h:mm a').format(timeSent);
-      print("123$time");
     } else if (timeSent.year == yesterdayDate.year &&
         timeSent.month == yesterdayDate.month &&
         timeSent.day == yesterdayDate.day) {
-      print("ram 3");
-
       changeTime = 'Yesterday';
-      // print('Yesterday');
     } else {
-      print("ram 4");
-
       changeTime = DateFormat('MMM d, h:mm a').format(timeSent);
-      // print("321$time");
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -89,8 +79,6 @@ class _ContactsListState extends ConsumerState<ContactsList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // const VerticalBox(height: 50),
-        // const SearchSection(),
         Expanded(
           child: ListView(
             children: [
@@ -280,7 +268,6 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                                 },
                                               ),
                                             ),
-
                                             leading: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -342,8 +329,6 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                                                 days: 1));
 
                                                     timeForChat(timeSent);
-                                                    print("timeSent");
-                                                    print(timeSent);
                                                     if (messages.isNotEmpty) {
                                                       _message = messages[0];
                                                     }
@@ -448,7 +433,6 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                                       );
                                                     }
                                                   } else {
-                                                    print("96328741");
                                                     return Text(
                                                       time!,
                                                       style: const TextStyle(
@@ -466,19 +450,6 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                                 }
                                               },
                                             ),
-
-                                            // isSelected == true
-                                            //     ? const Icon(
-                                            //         Icons.delete,
-                                            //         color: Colors.red,
-                                            //       )
-                                            //     : Text(
-                                            //         time!,
-                                            //         style: const TextStyle(
-                                            //           color: Colors.grey,
-                                            //           fontSize: 13,
-                                            //         ),
-                                            //       ),
                                           ),
                                         ),
                                         const Divider(
@@ -655,16 +626,6 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                               trailing: StreamBuilder<
                                                   QuerySnapshot<
                                                       Map<String, dynamic>>>(
-                                                //    .collection("users")
-                                                // .doc(FirebaseAuth.instance
-                                                //     .currentUser!.uid)
-                                                // .collection("chats")
-                                                // .doc(data.contactId)
-                                                // .collection("messages")
-                                                // .orderBy('timeSent',
-                                                //     descending: true)
-                                                // .limit(1)
-                                                // .snapshots(),
                                                 stream: FirebaseFirestore
                                                     .instance
                                                     .collection("users")
@@ -794,7 +755,7 @@ class _ContactsListState extends ConsumerState<ContactsList> {
                                                                     ),
                                                                   );
                                                                 } else {
-                                                                  print(
+                                                                  debugPrint(
                                                                       "ram 10");
 
                                                                   return const CircularProgressIndicator();
@@ -903,9 +864,3 @@ Shimmer contactsShimmer(BuildContext context) {
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!);
 }
-
-// class ContactsList extends ConsumerWidget {
-//   const ContactsList({Key? key}) : super(key: key);
-
-
-// }

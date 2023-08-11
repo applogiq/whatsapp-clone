@@ -1,5 +1,3 @@
-// import 'package:agora_uikit/agora_uikit.dart';
-// import 'package:agora_uikit/agora_uikit.dart';
 import 'dart:async';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
@@ -12,7 +10,9 @@ import 'package:whatsapp_ui/common/widgets/timer_widget.dart';
 import 'package:whatsapp_ui/config/agora_config.dart';
 import 'package:whatsapp_ui/features/call/controller/call_controller.dart';
 import 'package:whatsapp_ui/model/call.dart';
+// ignore: library_prefixes
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalview;
+// ignore: library_prefixes
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 
 class CallScreen extends ConsumerStatefulWidget {
@@ -49,13 +49,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   String baseUrl = 'http://192.168.29.94:8080';
   @override
   void initState() {
-    print("object");
     super.initState();
-    // client = AgoraClient(
-    //     agoraConnectionData: AgoraConnectionData(
-    //         appId: AgoraConfig.appId,
-    //         channelName: widget.channelId,
-    //         tokenUrl: baseUrl));
+
     initAgora();
   }
 
@@ -71,17 +66,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         : await engine.enableVideo();
     await engine.setChannelProfile(ChannelProfile.Communication);
     engine.setEventHandler(RtcEngineEventHandler(
-      joinChannelSuccess: (channel, uid, elapsed) {
-        // Future.delayed(const Duration(minutes: 1), oncallEnd);
-      },
+      joinChannelSuccess: (channel, uid, elapsed) {},
       userJoined: (uid, elapsed) {
-        print("9095userJoined$uid");
         setState(() {
           remoteUIDs.add(uid);
         });
       },
       userOffline: (uid, reason) {
-        print("9095userOffline$uid");
         setState(() {
           remoteUIDs.remove(uid);
           Navigator.pop(context);
@@ -93,34 +84,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         loading = false;
       });
     });
-    // await client!.initialize();
-//      engine.setEventHandler(
-//       RtcEngineEventHandler(
-//         joinChannelSuccess: (String channel, int uid, int elapsed) {
-//           print("local user $uid joined");
-//         },
-//         userJoined: (int uid, int elapsed) {
-//           print("remote user $uid joined");
-//           setState(() {
-//             _remoteUid = uid;
-//           });
-//         },
-//         userOffline: (int uid, UserOfflineReason reason) {
-//           print("remote user $uid left channel");
-//           setState(() {
-//             _remoteUid = null;
-//           });
-//         },
-//       ),
-//     );
-
-//   await engine.joinChannel(token, channelName, null, 0);
-// }
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     engine.destroy();
   }
@@ -163,20 +130,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     ],
                   ),
                 )
-                // AgoraVideoViewer(client: client!),
-                // AgoraVideoButtons(
-                //   client: client!,
-                //   disconnectButtonChild: IconButton(
-                //       onPressed: () async {
-                // await client!.engine.leaveChannel();
-                // ref.read(callControllerprovider).endCall(
-                //     widget.call.callerId,
-                //     widget.call.receiverId,
-                //     context);
-                //         Navigator.pop(context);
-                //       },
-                //       icon: const Icon(Icons.call_end)),
-                // )
               ],
             )),
     );
@@ -185,27 +138,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   Widget renderRemoteView(context) {
     if (remoteUIDs.isNotEmpty) {
       if (remoteUIDs.length == 1) {
-        // return SizedBox(
-        //   width: MediaQuery.of(context).size.width,
-        //   height: MediaQuery.of(context).size.height,
-        //   child: GridView.builder(
-        //       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        //           maxCrossAxisExtent: 200,
-        //           childAspectRatio: 11 / 20,
-        //           crossAxisSpacing: 5,
-        //           mainAxisSpacing: 10),
-        //       itemBuilder: (context, index) {
-        //         return Container(
-        //           alignment: Alignment.center,
-        //           decoration: BoxDecoration(
-        //               color: Colors.amber,
-        //               borderRadius: BorderRadius.circular(10)),
-        //           child: RtcRemoteView.SurfaceView(
-        //               uid: remoteUIDs[index], channelId: widget.channelId),
-        //         );
-        //       }),
-        // );
-
         return Stack(
           alignment: AlignmentDirectional.center,
           children: [
@@ -325,18 +257,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       ref
           .read(callControllerprovider)
           .endCall(widget.call.callerId, widget.call.receiverId, context);
-      // setState(() {
-      //   callEnded = true;
-      // });
-      // Future.delayed(const Duration(seconds: 2), () {
-      //   Navigator.pop(context);
-      // });
+
       Navigator.pop(context);
     });
   }
 
   void onSwitchCamera() {
     engine.switchCamera();
-    // engine.setEnableSpeakerphone(true);
   }
 }

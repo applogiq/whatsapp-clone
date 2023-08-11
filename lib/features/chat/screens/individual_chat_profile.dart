@@ -35,19 +35,7 @@ class IndividualChatProfileScreen extends ConsumerWidget {
             var data = snapshot.data! as DocumentSnapshot<Map<String, dynamic>>;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Padding(
-                //   padding: const EdgeInsets.only(left: 16, bottom: 100),
-                //   child: Align(
-                //     alignment: Alignment.topLeft,
-                //     child: InkWell(
-                //         onTap: () {
-                //           Navigator.pop(context);
-                //         },
-                //         child: const Icon(Icons.arrow_back_ios_rounded)),
-                //   ),
-                // ),
                 Container(
                   color: Colors.white,
                   child: Column(
@@ -57,25 +45,17 @@ class IndividualChatProfileScreen extends ConsumerWidget {
                         backgroundImage: NetworkImage(data['profilePic']),
                       ),
                       const VerticalBox(height: 8),
-
                       Text(
                         data['name'].toString(),
                         style: authScreenheadingStyle().copyWith(fontSize: 18),
                       ),
                       const VerticalBox(height: 8),
-                      // Text(
-                      //   data['aboutStatus'],
-                      //   style:
-                      //       authScreensubTitleStyle().copyWith(color: Colors.green),
-                      // ),
-
                       Text(
                         data['phoneNumber'],
                         style: authScreensubTitleStyle().copyWith(
                             color: const Color.fromRGBO(5, 31, 50, 0.8)),
                       ),
                       const VerticalBox(height: 8),
-
                       Text(
                         data['isOnline'] == true ? 'Online' : data['lastSeen'],
                         style: const TextStyle(
@@ -204,7 +184,6 @@ class IndividualChatProfileScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-
                 const Spacer(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),

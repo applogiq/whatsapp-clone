@@ -146,14 +146,10 @@ class _GroupContactsScreensState extends ConsumerState<GroupContactsScreens> {
                                               padding: const EdgeInsets.all(10),
                                               child: InkWell(
                                                 onTap: () {
-                                                  print(FirebaseAuth.instance
-                                                      .currentUser!.uid);
                                                   deleteStringList(
                                                       widget.groupId,
                                                       FirebaseAuth.instance
                                                           .currentUser!.uid);
-                                                  print(
-                                                      "FirebaseAuth.instance .currentUser!.uid");
                                                 },
                                                 child: const Text(
                                                   "Yes",
@@ -337,131 +333,3 @@ class _GroupContactsScreensState extends ConsumerState<GroupContactsScreens> {
         ])));
   }
 }
-
-
-
-
-
-// class GroupContactsScreens extends ConsumerWidget {
-//   const GroupContactsScreens({
-//     Key? key,
-//     required this.memberList,
-//     required this.members,
-//     required this.profilePic,
-//     required this.name,
-//     required this.membersId,
-//     required this.groupId,
-//   }) : super(key: key);
-//   final String profilePic;
-//   final String name;
-//   final String members;
-//   final int membersId;
-//   final List memberList;
-//   final String groupId;
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-   
-//   }
-
-//   // StreamBuilder<List<model.Group>>(
-//   //   stream: ref.watch(chatControllerProvider).chatGroups(),
-//   //   builder: (context, snapshot) {
-//   //     if (snapshot.connectionState == ConnectionState.waiting) {
-//   //       return const Loader();
-//   //     } else if (snapshot.hasError) {
-//   //       return const Center(
-//   //         child: Text("Error occurred"),
-//   //       );
-//   //     } else {
-//   //       print(
-//   //         snapshot.data![0].membersUid.length,
-//   //       );
-//   //       if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-//   //         return Expanded(
-//   //           child: ListView.builder(
-//   //             scrollDirection: Axis.vertical,
-//   //             physics: const BouncingScrollPhysics(),
-//   //             itemCount: int.parse(members),
-//   //             shrinkWrap: true,
-//   //             itemBuilder: (context, index) {
-//   //               print(int.parse(members).toString());
-//   //               print(membersId);
-//   //               var groupData = snapshot.data![index];
-//   //               if (index >= groupData.membersUid.length) {
-//   //                 return const SizedBox(); // Skip rendering if index is out of range
-//   //               }
-//   //               var memberUid = groupData.membersUid[index];
-
-//   //               return StreamBuilder<
-//   //                   DocumentSnapshot<Map<String, dynamic>>>(
-//   //                 stream: fireStore
-//   //                     .collection('users')
-//   //                     .doc(memberUid)
-//   //                     .snapshots(),
-//   //                 builder: (context, snapshot) {
-//   //                   if (snapshot.connectionState ==
-//   //                       ConnectionState.waiting) {
-//   //                     return const Loader();
-//   //                   } else if (snapshot.hasData &&
-//   //                       snapshot.data != null) {
-//   //                     var name = snapshot.data!.data()!['name'];
-//   //                     var profilePicture =
-//   //                         snapshot.data!.data()!['profilePic'];
-
-//   //                     return InkWell(
-//   //                       onTap: () {
-//   //                         Navigator.push(
-//   //                             context,
-//   //                             MaterialPageRoute(
-//   //                                 builder: (context) =>
-//   //                                     MobileChatScreen(
-//   //                                         isGroupChat: false,
-//   //                                         name: name,
-//   //                                         uid: memberUid,
-//   //                                         profileImage: profilePic)));
-//   //                       },
-//   //                       child: Padding(
-//   //                         padding: const EdgeInsets.symmetric(
-//   //                             vertical: 12),
-//   //                         child: ListTile(
-//   //                           leading: Container(
-//   //                             height: 50,
-//   //                             width: 50,
-//   //                             decoration: BoxDecoration(
-//   //                               borderRadius:
-//   //                                   BorderRadius.circular(12),
-//   //                               image: DecorationImage(
-//   //                                 image: NetworkImage(profilePicture),
-//   //                                 fit: BoxFit.cover,
-//   //                               ),
-//   //                             ),
-//   //                           ),
-//   //                           title: Text(
-//   //                             name,
-//   //                             style: authScreenheadingStyle()
-//   //                                 .copyWith(
-//   //                                     fontWeight: FontWeight.w600,
-//   //                                     fontSize: 14),
-//   //                           ),
-//   //                         ),
-//   //                       ),
-//   //                     );
-//   //                   } else if (snapshot.hasError) {
-//   //                     return const Text("Error occurred");
-//   //                   } else {
-//   //                     return const CircularProgressIndicator();
-//   //                   }
-//   //                 },
-//   //               );
-//   //             },
-//   //           ),
-//   //         );
-//   //       } else {
-//   //         return const Center(
-//   //           child: CircularProgressIndicator(),
-//   //         );
-//   //       }
-//   //     }
-//   //   },
-//   // ),
-// }

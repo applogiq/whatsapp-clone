@@ -22,17 +22,15 @@ class AuthRepository {
 
   AuthRepository({required this.auth, required this.fireStore});
   Future<UserModel?> getCurrentUserData() async {
-    print(auth.currentUser?.uid.toString());
     var userdata =
         await fireStore.collection("users").doc(auth.currentUser?.uid).get();
-    // print(userdata);
 
     UserModel? user;
     if (userdata.data() != null) {
       try {
         user = UserModel.fromMap(userdata.data()!);
       } catch (e) {
-        print(e.toString());
+        debugPrint(e.toString());
       }
     }
     return user;
@@ -135,6 +133,7 @@ class AuthRepository {
           isTyping: false);
 
       await fireStore.collection('users').doc(uid).set(user.toMap());
+      // ignore: unused_local_variable
       var data = await fireStore.collection('users').doc(uid).set(user.toMap());
       // print(data).;
       Navigator.pushAndRemoveUntil(
@@ -186,9 +185,7 @@ class AuthRepository {
             });
       }
     } catch (e) {
-      showSnackBar(
-          context: context,
-          content: e.toString()); // TODO: show dialog with error
+      showSnackBar(context: context, content: e.toString());
     }
   }
 }

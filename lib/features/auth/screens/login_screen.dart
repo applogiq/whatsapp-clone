@@ -76,7 +76,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     errortext = '';
     setState(() {});
@@ -96,12 +95,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   void requestNotificationPermissions() async {
+    // ignore: unused_local_variable
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
-    print('User granted permission: ${settings.authorizationStatus}');
   }
 
   void sendPhoneNumber() async {
@@ -110,7 +109,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       isLoad = true;
     });
     if (country != null && phoneNumber.isNotEmpty) {
-      print(isLoad);
       ref
           .read(authControllerProvider)
           .signInWithPhone(context, '+${country!.phoneCode}$phoneNumber');
@@ -127,7 +125,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         isLoad = false;
       });
     });
-    print("123$isLoad");
   }
 
   @override

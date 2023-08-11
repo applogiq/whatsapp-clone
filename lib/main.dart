@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -14,21 +16,12 @@ import 'package:whatsapp_ui/features/landing/screens/landing_screen.dart';
 import 'package:whatsapp_ui/firebase_options.dart';
 import 'package:whatsapp_ui/router.dart';
 import 'package:whatsapp_ui/screens/mobile_layout_screen.dart';
-// import 'package:flutter_windowmanager/flutter_windowmanager.dart';
-
-// Future<void> disableScreenRecordingAndScreenshots() async {
-//   await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // disableScreenRecordingAndScreenshots();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // PushNotification().setupFirebaseMessaging("Head", "Sub");
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   getDeviceToken();
-  // setupFirebaseMessaging();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -37,25 +30,14 @@ final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
 void getDeviceToken() async {
   String? token = await _firebaseMessaging.getToken();
-  print('Device Token: $token');
-// Send this token to your server for identification and future notification delivery
 }
 
 void setupFirebaseMessaging() async {
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print(
-        'Received message while app is in the foreground: ${message.notification}');
-// Handle the notification here
-  });
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print('A new onMessageOpenedApp event was published!');
-  });
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {});
 }
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-// Handle the incoming message here
-  print("Handling a background message: ${message.messageId}");
-}
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
 
 class MyApp extends ConsumerWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -82,7 +64,6 @@ class MyApp extends ConsumerWidget {
                   }
                 },
                 error: (error, trace) {
-                  print(error.toString());
                   return ErrorSccreen(error: error.toString());
                 },
                 loading: () => const Scaffold(body: Loader())));

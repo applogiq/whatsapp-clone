@@ -1,3 +1,5 @@
+// ignore_for_file: must_call_super
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -88,8 +90,6 @@ class _VideoPlayerControlsState extends State<VideoPlayerControls> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-
     widget.controller.dispose();
   }
 

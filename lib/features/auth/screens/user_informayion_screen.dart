@@ -78,14 +78,7 @@ class _UserInformationScreenState extends ConsumerState<UserInformationScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const VerticalBox(height: 40),
-                // Align(
-                //   alignment: Alignment.topLeft,
-                //   child: InkWell(
-                //       onTap: () {
-                //         Navigator.pop(context);
-                //       },
-                //       child: const Icon(Icons.arrow_back_outlined)),
-                // ),
+
                 const VerticalBox(height: 28),
                 Align(
                   alignment: Alignment.topLeft,

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_ui/common/enums/message_enum.dart';
+import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/features/chat/repositories/chat_repository.dart';
 import 'package:whatsapp_ui/model/chat_contact.dart';
 import 'package:whatsapp_ui/model/message_model.dart';
@@ -36,26 +37,6 @@ class ChatController {
     return chatRepository.getgroupStream(groupId);
   }
 
-  // Stream<UserModel?> getCurrentUserData() {
-  //   Stream<DocumentSnapshot<Map<String, dynamic>>> userDataStream =
-  //       FirebaseFirestore.instance
-  //           .collection("users")
-  //           .doc(FirebaseAuth.instance.currentUser?.uid)
-  //           .snapshots();
-
-  //   return userDataStream.map((snapshot) {
-  //     if (snapshot.exists) {
-  //       return UserModel.fromMap(snapshot.data()!);
-  //     } else {
-  //       // Document does not exist
-
-  //       print("User document does not exist");
-
-  //       return null;
-  //     }
-  //   });
-  // }
-
   Future<void> sentTextMessage(
     List memberid,
     BuildContext context,
@@ -75,7 +56,7 @@ class ChatController {
         try {
           user = UserModel.fromMap(userdata.data()!);
         } catch (e) {
-          print(e.toString());
+          showSnackBar(context: context, content: e.toString());
         }
       }
       return user;
@@ -93,37 +74,14 @@ class ChatController {
           receiverUserId: receiverUserId,
           sendUser: user!,
         );
-
-        print('Text message sent successfully');
       } catch (e) {
-        print('Error sending text message: $e');
+        showSnackBar(context: context, content: e.toString());
       }
-    } else {
-      print('User data is null');
-    }
+    } else {}
   }
-
-  // sentTextMessage(
-  //     BuildContext context,
-  //     String text,
-  //     String receiverUserId,
-  //     // int memberId,
-  //     bool isGroupChat) async {
-  //   ref
-  //       .read(userdataProvider)
-  //       .whenData((value) => chatRepository.sentTextMessage(
-  //           // memberId: memberId,
-  //           isGroupChat: isGroupChat,
-  //           context: context,
-  //           text: text,
-  //           receiverUserId: receiverUserId,
-  //           sendUser: value!));
-  // }
 
   Future<void> sentFileMessage(BuildContext context, File file, List memberid,
       String receiverUserId, MessageEnum messageEnum, bool isGroupChat) async {
-    print("123456 2");
-
     UserModel? user;
 
     Future<UserModel?> getCurrentUserData() async {
@@ -136,7 +94,7 @@ class ChatController {
         try {
           user = UserModel.fromMap(userdata.data()!);
         } catch (e) {
-          print(e.toString());
+          showSnackBar(context: context, content: e.toString());
         }
       }
       return user;
@@ -156,11 +114,9 @@ class ChatController {
             messageEnum: messageEnum,
             ref: ref);
       } catch (e) {
-        print(e.toString());
+        showSnackBar(context: context, content: e.toString());
       }
-    } else {
-      print('User data is null');
-    }
+    } else {}
   }
 
   void setChatMessageSeen(

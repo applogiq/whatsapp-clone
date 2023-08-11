@@ -52,9 +52,6 @@ class _SenderMessageCardState extends State<SenderMessageCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onLongPress: () {
-        print("Dei");
-        print(widget.receiverId);
-        print(widget.messageId);
         setState(() {
           isSelected = true;
         });

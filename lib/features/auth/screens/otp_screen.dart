@@ -1,9 +1,9 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
-// import 'package:whatsapp_ui/common/utils/colors.dart';
-// import 'package:whatsapp_ui/features/auth/controller/auth_controller.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
 import 'package:whatsapp_ui/features/auth/widgets/otp_field.dart';
 import 'package:whatsapp_ui/features/chat/widgets/alert_widget.dart';

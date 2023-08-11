@@ -10,14 +10,6 @@ typedef OnSingleSelectionCallback = void Function(int selectedIndex);
 ///Multiple selection callback of list dialog
 typedef OnMultiSelectionCallback = void Function(List<int> selectedIndexes);
 
-///
-///created time: 2019-07-31 09:35
-///author linzhiliang
-///version 1.0
-///since
-///file name: classic_dialog_widget.dart
-///description: General dialog
-///
 class ClassicGeneralDialogWidget extends StatelessWidget {
   ///Title text of the dialog
   final String? titleText;
@@ -87,49 +79,6 @@ class ClassicGeneralDialogWidget extends StatelessWidget {
               ],
             )
           : null,
-      // actions: actions ??
-      //     [
-      //       onNegativeClick != null
-      //           ? TextButton(
-      //               onPressed: onNegativeClick,
-      //               child: Text(
-      //                 negativeText ?? 'cancel',
-      //                 style: negativeTextStyle ??
-      //                     TextStyle(
-      //                         color: Theme.of(context).textTheme.caption!.color,
-      //                         fontSize:
-      //                             Theme.of(context).textTheme.button!.fontSize),
-      //               ),
-      //             )
-      //           : Container(),
-      //       onPositiveClick != null
-      //           ? TextButton(
-      //               onPressed: onPositiveClick,
-      //               style: ButtonStyle(
-      //                 foregroundColor: MaterialStateProperty.resolveWith<Color>(
-      //                   (Set<MaterialState> states) {
-      //                     if (states.contains(MaterialState.pressed)) {
-      //                       return Theme.of(context)
-      //                           .colorScheme
-      //                           .primary
-      //                           .withOpacity(0.5);
-      //                     }
-      //                     return Theme.of(context).splashColor;
-      //                   },
-      //                 ),
-      //               ),
-      //               child: Text(
-      //                 positiveText ?? 'confirm',
-      //                 style: positiveTextStyle ??
-      //                     TextStyle(
-      //                         color: Theme.of(context).primaryColor,
-      //                         fontSize:
-      //                             Theme.of(context).textTheme.button!.fontSize),
-      //               ),
-      //             )
-      //           : Container(),
-      //     ],
-
       elevation: 0.0,
       shape: Theme.of(context).dialogTheme.shape,
     );
@@ -148,14 +97,6 @@ enum ListType {
   multiSelect,
 }
 
-///
-///created time: 2019-08-01 08:59
-///author linzhiliang
-///version 1.0
-///since
-///file name: classic_dialog_widget.dart
-///description: Classic dialog with list content
-///
 class ClassicListDialogWidget<T> extends StatefulWidget {
   ///Title text of the dialog
   final String? titleText;
@@ -219,7 +160,6 @@ class ClassicListDialogWidget<T> extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ClassicListDialogWidgetState<T>();
   }
 }

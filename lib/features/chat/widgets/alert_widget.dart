@@ -32,10 +32,6 @@ showAlertDialog(BuildContext context) {
                   boxShadow: const [
                     BoxShadow(
                         color: Color.fromARGB(255, 187, 179, 179),
-                        // offset: Offset(
-                        //   20,
-                        //   20,
-                        // ),
                         blurRadius: 25),
                   ],
                   borderRadius: BorderRadius.circular(12),

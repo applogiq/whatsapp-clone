@@ -1,8 +1,8 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 
-// import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:file_picker/file_picker.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -93,9 +93,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // checkKeyboardVisibility();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -110,14 +108,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      print("object");
-      // // When the app is paused or inactive, update isTyping to false
-      // await FirebaseFirestore.instance
-      //     .collection("users")
-      //     .doc(FirebaseAuth.instance.currentUser!.uid)
-      //     .collection('chats')
-      //     .doc(widget.recieverUserId)
-      //     .update({'isTyping': false});
       ref.read(authControllerProvider).setuserState(false);
     }
   }
@@ -126,8 +116,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
       FlutterLocalNotificationsPlugin();
   setupFirebaseMessaging(String head, String sub) async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(
-          'Received message while app is in the foreground: ${message.notification}');
       showNotification(head, sub);
     });
   }
@@ -158,12 +146,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
       _messageController.text = '';
       isShowSendButton = false;
 
-      // await FirebaseFirestore.instance
-      //     .collection("users")
-      //     .doc(FirebaseAuth.instance.currentUser!.uid)
-      //     .collection('chats')
-      //     .doc(widget.recieverUserId)
-      //     .update({'isTyping': false});
       setState(() {});
     }
   }
@@ -172,8 +154,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
     File file,
     MessageEnum messageEnum,
   ) {
-    print("123456 1");
-
     ref.read(chatControllerProvider).sentFileMessage(
         context,
         file,
@@ -184,7 +164,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
   }
 
   void selectImage() async {
-    print("123456");
     File? image = await pickImageFromGallery(context);
     if (image != null) {
       sendFileMessage(image, MessageEnum.image);
@@ -203,16 +182,6 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
       isContainerVisible = false;
     });
   }
-
-  // selectDocument() async {
-  //   FilePickerResult? result = await FilePicker.platform
-  //       .pickFiles(type: FileType.custom, allowedExtensions: ['pdf', 'doc']);
-  //   if (result != null) {
-  //     print("❤️❤️❤️");
-  //   } else {
-  //     print("❤️❤️❤️123");o
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -311,28 +280,10 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField>
                       controller: _messageController,
                       onChanged: (val) async {
                         if (val.isEmpty) {
-                          // try {
-
-                          // } catch (e) {
-                          //   if (mounted) {
-                          //     setState(() {
-                          //       isShowSendButton = false;
-                          //     });
-                          //   }
-                          // }
                           setState(() {
                             isShowSendButton = false;
                           });
                         } else {
-                          // try {
-
-                          // } catch (e) {
-                          //   if (mounted) {
-                          //     setState(() {
-                          //       isShowSendButton = true;
-                          //     });
-                          //   }
-                          // }
                           setState(() {
                             isShowSendButton = true;
                           });

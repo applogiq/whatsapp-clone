@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +53,7 @@ class _ChatListState extends ConsumerState<ChatList> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final internetConnectionStatus =
         ref.watch(internetConnectionStatusProvider);
     return StreamBuilder<List<Message>>(
@@ -75,13 +78,11 @@ class _ChatListState extends ConsumerState<ChatList> {
           itemCount: messages.length,
           itemBuilder: (context, index) {
             final messageData = messages[index];
-            // messageData.
             final messageStartDate = messageData.timeSent;
             final previousMessageIndex = index - 1;
 
             String conversationStartLabel = '';
 
-            // Check if it's the first message or if the start date is different from the previous message
             if (index == 0 ||
                 (previousMessageIndex >= 0 &&
                     messages[previousMessageIndex].timeSent.day !=
@@ -106,7 +107,6 @@ class _ChatListState extends ConsumerState<ChatList> {
 
             var timeSent = DateFormat('h:mm a').format(messageStartDate);
 
-            // Render the conversation start label if it's a new day
             if (conversationStartLabel.isNotEmpty) {
               return Column(
                 children: [
@@ -124,14 +124,6 @@ class _ChatListState extends ConsumerState<ChatList> {
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(255, 251, 249, 249),
                             borderRadius: BorderRadius.circular(12),
-                            // // boxShadow: [
-                            // //   BoxShadow(
-                            // //     color: Colors.grey.withOpacity(0.5),
-                            // //     spreadRadius: 2,
-                            // //     blurRadius: 5,
-                            // //     offset: const Offset(0, 3),
-                            // //   ),
-                            // // ],
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -146,15 +138,11 @@ class _ChatListState extends ConsumerState<ChatList> {
                       ],
                     ),
                   ),
-
                   const VerticalBox(height: 10),
-
-                  // Render the message card
                   _buildMessageCard(messageData, timeSent),
                 ],
               );
             } else {
-              // Render the message card without the conversation start label
               return _buildMessageCard(messageData, timeSent);
             }
           },
@@ -164,12 +152,7 @@ class _ChatListState extends ConsumerState<ChatList> {
   }
 
   Widget _buildMessageCard(Message messageData, String timeSent) {
-    print(">>>>>>>>>>>>>>>>>>>11");
-
     if (widget.isGroupChat) {
-      print("❤️${widget.receiverUserid}");
-      print("❤️❤️${messageData.messageId}");
-      print("❤️❤️${FirebaseAuth.instance.currentUser!.uid}");
       ref.read(chatControllerProvider).groupsetChatMessageSeen(
             context,
             widget.receiverUserid,
@@ -178,8 +161,6 @@ class _ChatListState extends ConsumerState<ChatList> {
     } else {
       if (!messageData.isSeen &&
           messageData.recieverid == FirebaseAuth.instance.currentUser!.uid) {
-        print(">>>>>>>>>>>>>>>>>>>22");
-
         ref.read(chatControllerProvider).setChatMessageSeen(
               context,
               widget.receiverUserid,
@@ -193,10 +174,9 @@ class _ChatListState extends ConsumerState<ChatList> {
         message: messageData.text,
         date: timeSent,
         type: messageData.type,
-        isSeen: messageData.isSeen, receiverId: widget.receiverUserid,
+        isSeen: messageData.isSeen,
+        receiverId: widget.receiverUserid,
         messageId: messageData.messageId,
-
-        // print(messageData.messageId);
       );
     }
 

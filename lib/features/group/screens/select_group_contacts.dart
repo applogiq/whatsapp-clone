@@ -21,13 +21,6 @@ class SelectGroupContactsScreen extends ConsumerStatefulWidget {
 
 class _SelectGroupContactsScreenState
     extends ConsumerState<SelectGroupContactsScreen> {
-  // void selectContact(
-  //     WidgetRef ref, Contact selectedContact, BuildContext contex,String contactNum) {
-  //   ref
-  //       .read(selectContactControllerProvider)
-  //       .selectContact(selectedContact, context,contactNum);
-  // }
-
   final searchController = TextEditingController();
 
   List<int> selectContacts = [];
@@ -50,9 +43,6 @@ class _SelectGroupContactsScreenState
               .update((state) => state..add(contact));
         }
       }
-      // ref
-      //     .read(selectedContactGroups.notifier)
-      //     .update((state) => [...state, contact]);
     });
   }
 
@@ -90,107 +80,6 @@ class _SelectGroupContactsScreenState
             body: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                //     future: FirebaseFirestore.instance.collection("users").get(),
-                //     builder: (context, snapshot) {
-                //       if (snapshot.connectionState == ConnectionState.waiting) {
-                //         return const CircularProgressIndicator();
-                //       }
-                //       if (snapshot.hasData) {
-                //         final users = snapshot.data!.docs;
-                //         final registeredContacts =
-                //             ref.watch(selectedContactGroups).where((contact) {
-                //           final phoneNumber =
-                //               contact.phones[0].number.replaceAll(' ', '');
-                //           return users
-                //               .any((user) => user['phoneNumber'] == phoneNumber);
-                //         }).toList();
-                //         return ref.watch(selectedContactGroups).isEmpty
-                //             ? const SizedBox.shrink()
-                //             : SizedBox(
-                //                 height: 110,
-                //                 child: ListView.builder(
-                //                   scrollDirection: Axis.horizontal,
-                //                   itemCount:
-                //                       ref.watch(selectedContactGroups).length,
-                //                   itemBuilder: (context, index) {
-                //                     final contact =
-                //                         ref.watch(selectedContactGroups)[index];
-                //                     final phoneNumber = contact.phones[0].number
-                //                         .replaceAll(' ', '');
-
-                //                     final user = users.firstWhere((user) =>
-                //                         user['phoneNumber'] == phoneNumber);
-                //                     final profilePic = user['profilePic'] ??
-                //                         'https://s3.amazonaws.com/37assets/svn/765-default-avatar.png';
-
-                //                     return GestureDetector(
-                //                       onTap: () {
-                //                         selectContactsTile(index, contact);
-                //                         print(contact.displayName);
-                //                       },
-                //                       child: Padding(
-                //                         padding: const EdgeInsets.all(8.0),
-                //                         child: Column(
-                //                           children: [
-                //                             Container(
-                //                               width: 60,
-                //                               height: 60,
-                //                               decoration: BoxDecoration(
-                //                                 shape: BoxShape.circle,
-                //                                 image: DecorationImage(
-                //                                   image: NetworkImage(profilePic),
-                //                                   fit: BoxFit.cover,
-                //                                 ),
-                //                               ),
-                //                             ),
-                //                             const SizedBox(height: 8),
-                //                             Text(contact.displayName),
-                //                           ],
-                //                         ),
-                //                       ),
-                //                     );
-                //                   },
-                //                 ),
-                //               );
-                //       } else {
-                //         return const Text('No users found');
-                //       }
-                //     }),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                //   child: SizedBox(
-                //     height: getProportionateScreenHeight(45),
-                //     width: double.infinity,
-                //     child: TextField(
-                //       controller: searchController,
-                //       // autofocus: true,
-                //       decoration: InputDecoration(
-                //           fillColor: const Color.fromRGBO(242, 242, 242, 1),
-                //           filled: true,
-                //           hintText: 'Search contacts',
-                //           border: OutlineInputBorder(
-                //               borderRadius: BorderRadius.circular(12),
-                //               borderSide:
-                //                   const BorderSide(color: Colors.transparent)),
-                //           focusedBorder: OutlineInputBorder(
-                //               borderRadius: BorderRadius.circular(12),
-                //               borderSide:
-                //                   const BorderSide(color: Colors.transparent)),
-                //           contentPadding: const EdgeInsets.fromLTRB(10, 12, 0, 0)),
-                //       cursorWidth: 1.2,
-                //       cursorColor: Colors.black,
-                //       keyboardType: TextInputType.name,
-                //       inputFormatters: const [],
-                //       onChanged: (value) {},
-                //       style: authScreensubTitleStyle().copyWith(fontSize: 15),
-                //     ),
-                //   ),
-                // ),
-                // const SizedBox(
-                //   height: 15,
-                // ),
-
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Text(
@@ -226,22 +115,12 @@ class _SelectGroupContactsScreenState
                                   (user) => user['phoneNumber'] == phoneNumber);
                             }).toList();
 
-                            print(
-                                'contactsList length: ${contactsList.length}');
-                            print('users length: ${users.length}');
-                            print(
-                                'registeredContacts length: ${registeredContacts.length}');
-
                             return Expanded(
                               child: ListView.builder(
                                 shrinkWrap: true,
                                 physics: const BouncingScrollPhysics(),
                                 itemCount: registeredContacts.length,
                                 itemBuilder: (context, index) {
-                                  print('index: $index');
-                                  print(
-                                      'registeredContacts length: ${registeredContacts.length}');
-
                                   final contact = registeredContacts[index];
                                   final phoneNumber = contact.phones[0].number
                                       .replaceAll(' ', '');
@@ -254,7 +133,6 @@ class _SelectGroupContactsScreenState
                                   return InkWell(
                                     onTap: () {
                                       selectContactsTile(index, contact);
-                                      print(contact.displayName);
                                     },
                                     child: ListTile(
                                       trailing: selectContacts.contains(index)

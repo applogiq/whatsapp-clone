@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:whatsapp_ui/common/config/size_config.dart';
 import 'package:whatsapp_ui/common/config/text_style.dart';
+import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/common/widgets/box/horizontal_box.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
 import 'package:whatsapp_ui/common/widgets/shimmer/shimmer.dart';
@@ -57,7 +60,6 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
   @override
   void initState() {
     datastream = ref.read(authControllerProvider).userDataById(widget.uid);
-    // TODO: implement initState
     super.initState();
   }
 
@@ -148,6 +150,7 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                                           widget.memberIdList![index];
                                       final user = userList.firstWhere(
                                           (userDoc) => userDoc.id == memberId);
+                                      // ignore: unnecessary_null_comparison
                                       if (user != null) {
                                         if (user.data().containsKey('name')) {
                                           return Text(
@@ -190,10 +193,6 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                         const HorizontalBox(width: 10),
                         InkWell(
                             onTap: () async {
-                              // await FirebaseFirestore.instance
-                              //     .collection("users")
-                              //     .doc(uid)
-                              //     .update({'isTyping': false});
                               Navigator.pop(context);
                             },
                             child: const Icon(Icons.arrow_back)),
@@ -239,65 +238,6 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                                         fontWeight: FontWeight.normal,
                                         color: Color.fromRGBO(118, 112, 109, 1),
                                       )),
-                                  // StreamBuilder<Object>(
-                                  //   stream: FirebaseFirestore.instance
-                                  //       .collection('users')
-                                  //       .doc(widget.uid)
-                                  //       .collection('chats')
-                                  //       .doc(FirebaseAuth.instance.currentUser!
-                                  //           .uid) // Replace chatRoomId with the appropriate identifier for the current chat room
-                                  //       .snapshots(),
-                                  //   builder: (context, snapshots) {
-                                  //     if (snapshots.connectionState ==
-                                  //         ConnectionState.waiting) {
-                                  //       return const Text("");
-                                  //     }
-                                  //     if (!snapshots.hasData ||
-                                  //         snapshots.data == null) {
-                                  //       return const Text(
-                                  //           ""); // Return an empty widget or show an error message
-                                  //     }
-
-                                  //     var data = snapshots.data!
-                                  //         as DocumentSnapshot<
-                                  //             Map<String, dynamic>>;
-
-                                  //     if (data.exists) {
-                                  //       return data['isTyping'] == true
-                                  //           ? Text(
-                                  //               "Typing....",
-                                  //               style:
-                                  //                   authScreensubTitleStyle(),
-                                  //             )
-                                  //           : Text(
-                                  //               snapshot.data!.isOnline
-                                  //                   ? 'Online'
-                                  //                   : snapshot.data!.lastSeen,
-                                  //               style: const TextStyle(
-                                  //                 fontSize: 10,
-                                  //                 overflow:
-                                  //                     TextOverflow.ellipsis,
-                                  //                 fontWeight: FontWeight.normal,
-                                  //                 color: Color.fromRGBO(
-                                  //                     118, 112, 109, 1),
-                                  //               ),
-                                  //             );
-                                  //     } else {
-                                  //       // Handle the case when the document doesn't exist
-                                  //       return Text(
-                                  //           snapshot.data!.isOnline
-                                  //               ? 'Online'
-                                  //               : snapshot.data!.lastSeen,
-                                  //           style: const TextStyle(
-                                  //             fontSize: 10,
-                                  //             overflow: TextOverflow.ellipsis,
-                                  //             fontWeight: FontWeight.normal,
-                                  //             color: Color.fromRGBO(
-                                  //                 118, 112, 109, 1),
-                                  //           ));
-                                  //     }
-                                  //   },
-                                  // ),
 
                                   const VerticalBox(height: 5),
                                 ],
@@ -319,7 +259,9 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
                                   try {
                                     user = UserModel.fromMap(userdata.data()!);
                                   } catch (e) {
-                                    print(e.toString());
+                                    showSnackBar(
+                                        context: context,
+                                        content: e.toString());
                                   }
                                 }
                                 return user;
@@ -353,24 +295,6 @@ class _MobileChatScreenState extends ConsumerState<MobileChatScreen> {
               child: ChatList(
                   receiverUserid: widget.uid, isGroupChat: widget.isGroupChat),
             ),
-            // StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-            //     stream: FirebaseFirestore.instance
-            //         .collection('users')
-            //         .doc(FirebaseAuth.instance.currentUser!.uid)
-            //         .snapshots(),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.waiting) {
-            //         return const SizedBox.shrink();
-            //       }
-            //       if (!snapshot.hasData || snapshot.data == null) {
-            //         return const SizedBox
-            //             .shrink(); // Return an empty widget or show an error message
-            //       }
-            //       var data = snapshot.data!;
-            //       return data['isTyping'] == true
-            //           ? const TypingIndicator(showIndicator: true)
-            //           : const SizedBox.shrink();
-            //     }),
             BottomChatField(
               memberId: widget.isGroupChat ? widget.memberIdList! : [],
               recieverUserId: widget.uid,
@@ -393,7 +317,6 @@ Shimmer appbarShimmer(BuildContext context) {
           const HorizontalBox(width: 15),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
                 width: getProportionateScreenWidth(100),
@@ -401,7 +324,6 @@ Shimmer appbarShimmer(BuildContext context) {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16)),
                 height: getProportionateScreenHeight(10),
-                // width: getProportionateScreenWidth(120),
               ),
               const VerticalBox(height: 15),
               Container(

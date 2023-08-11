@@ -33,10 +33,7 @@ class CallPickUpMainScreen extends ConsumerWidget {
                 ? Center(
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,
-                      // alignment: Alignment.center,
-                      // padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           const SizedBox(
                             height: 100,

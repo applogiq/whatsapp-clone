@@ -21,6 +21,7 @@ class CallPickUpScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ignore: unused_local_variable
     late RtcEngine engine;
 
     return StreamBuilder<DocumentSnapshot>(

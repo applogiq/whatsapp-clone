@@ -14,6 +14,7 @@ class _TimerWidgetState extends State<TimerWidget>
   bool _timerStopped = false;
   int? levelClock;
 
+  // ignore: unused_element
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -27,6 +28,7 @@ class _TimerWidgetState extends State<TimerWidget>
     });
   }
 
+  // ignore: unused_element
   void _endTimer() {
     setState(() {
       if (_controller!.isAnimating) {
@@ -68,6 +70,7 @@ class _TimerWidgetState extends State<TimerWidget>
   }
 }
 
+// ignore: must_be_immutable
 class Countdown extends AnimatedWidget {
   Countdown({
     Key? key,

@@ -7,6 +7,50 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:374239672004:android:98a509deec11044536fb91",
+        "android_client_info": {
+          "package_name": "app.chatQ"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374239672004-hjuqoa15kai870d8cthvjnc3gsh8dpl4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.chatQ",
+            "certificate_hash": "87b51ca765bc2417cd3bc186c8f7049ded72e514"
+          }
+        },
+        {
+          "client_id": "374239672004-qe27ne0h2q1uc1d1u42o0rl8g2ov57pj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEfXsmJbTHnF1xbTQvi9vyXKDzXoKI-aU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374239672004-qe27ne0h2q1uc1d1u42o0rl8g2ov57pj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "374239672004-ta8c9hjuun932ck6smonkggr919l5lg9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.whatsappUi"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:374239672004:android:6019f87264bae8b936fb91",
         "android_client_info": {
           "package_name": "com.example.whatsapp_uiii"

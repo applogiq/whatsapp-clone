@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whatsapp_ui/common/utils/utils.dart';
 import 'package:whatsapp_ui/common/widgets/box/horizontal_box.dart';
 import 'package:whatsapp_ui/common/widgets/box/vertical_box.dart';
 import 'package:whatsapp_ui/features/auth/controllers/auth_controller.dart';
@@ -88,7 +89,6 @@ class _OTPFieldState extends ConsumerState<OTPField> {
 
   void reSentOTP() async {
     try {
-      print(isLoad);
       ref
           .read(authControllerProvider)
           .signInWithPhone(context, widget.phoneNumber);
@@ -99,13 +99,13 @@ class _OTPFieldState extends ConsumerState<OTPField> {
         });
       });
     } catch (e) {
-      print(e.toString());
+      showSnackBar(context: context, content: e.toString());
     }
-    print("123$isLoad");
   }
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     var size = MediaQuery.of(context).size;
     return Column(
       children: [
@@ -216,6 +216,7 @@ class TimerResendWidget extends StatefulWidget {
 
 class _TimerResendWidgetState extends State<TimerResendWidget>
     with TickerProviderStateMixin {
+  // ignore: unused_field
   int _counter = 30;
   AnimationController? _controller;
 
@@ -257,6 +258,7 @@ class _TimerResendWidgetState extends State<TimerResendWidget>
   }
 }
 
+// ignore: must_be_immutable
 class Countdown extends AnimatedWidget {
   Countdown({
     Key? key,

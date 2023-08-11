@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,18 +35,12 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
   @override
   void initState() {
     super.initState();
-    print("ram");
-    // ref.watch(authControllerProvider).getUser();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Access providers or use their values here
       ref.watch(authControllerProvider).getUserData();
       ref.read(authControllerProvider).setuserState(true);
     });
-//  await FirebaseFirestore.instance
-//         .collection("users")
-//         .doc(widget.recieverUserId)
-//         .update({'isTyping': false});
+
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -53,16 +49,6 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     super.dispose();
     WidgetsBinding.instance.removeObserver(this);
   }
-
-  // updateLastSeen() {
-  //   final DateTime now = DateTime.now();
-  //   String formattedDate = DateFormat.yMMMMd().format(now);
-  //   String formattedTime = DateFormat.jm().format(now);
-  //   String period = DateFormat('a').format(now);
-  //   String result = 'Last seen $formattedDate $formattedTime ';
-
-  //   return result;
-  // }
 
   String updateLastSeen() {
     final DateTime now = DateTime.now();
@@ -92,7 +78,6 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
     showAnimatedDialog(
       context: context,
       barrierDismissible: false,
-
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
@@ -114,10 +99,6 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
                     boxShadow: const [
                       BoxShadow(
                           color: Color.fromARGB(255, 187, 179, 179),
-                          // offset: Offset(
-                          //   20,
-                          //   20,
-                          // ),
                           blurRadius: 25),
                     ],
                     borderRadius: BorderRadius.circular(12),
@@ -151,24 +132,17 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
           ],
         );
       },
-
       animationType: DialogTransitionType.size,
-
       curve: Curves.fastOutSlowIn,
-
-// duration: const Duration(seconds: 1),
     );
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("close.............1");
-
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
         ref.read(authControllerProvider).setuserState(true);
-        print("close.............2");
 
         break;
       case AppLifecycleState.inactive:
@@ -176,7 +150,6 @@ class _MobileLayoutScreenState extends ConsumerState<MobileLayoutScreen>
       case AppLifecycleState.paused:
         ref.read(authControllerProvider).setuserState(false);
         ref.read(authControllerProvider).setLastSeenData(updateLastSeen());
-        print("close.............");
 
         break;
     }
@@ -358,8 +331,6 @@ class SearchTextWidget extends StatelessWidget {
   final ValueSetter<String>? onChange;
 
   final TextEditingController? textEditingController;
-
-  // late TextEditingController _controller;
   @override
   Widget build(BuildContext context) {
     return CustomColorContainer(

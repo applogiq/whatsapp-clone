@@ -13,25 +13,3 @@ final internetConnectionStatusProvider =
   final internetConnectionChecker = ref.watch(internetConnectionProvider);
   return internetConnectionChecker.onStatusChange;
 });
-
-
-
-// enum InternetConnectionStatus {
-//   connected,
-//   disconnected,
-// }
-
-// final internetConnectionProvider =
-//     StateProvider<InternetConnectionStatus>((ref) {
-//   return InternetConnectionStatus.connected;
-// });
-
-// final internetConnectionStreamProvider =
-//     StreamProvider.autoDispose<InternetConnectionStatus>((ref) {
-//   final iC = InternetConnectionChecker();
-//   return iC.onStatusChange.map((status) {
-//     return status == InternetConnectionStatus.disconnected
-//         ? InternetConnectionStatus.disconnected
-//         : InternetConnectionStatus.connected;
-//   });
-// });

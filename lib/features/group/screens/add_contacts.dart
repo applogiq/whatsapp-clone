@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -17,40 +19,8 @@ class AddGroupContacts extends ConsumerStatefulWidget {
 }
 
 class _AddGroupContactsState extends ConsumerState<AddGroupContacts> {
-  // void selectContact(
-  //     WidgetRef ref, Contact selectedContact, BuildContext context) {
-  //   ref
-  //       .read(selectContactControllerProvider)
-  //       .addContact(selectedContact, context, widget.groupId);
-  // }
-
   List<int> selectContacts = [];
   List<Contact> selectedContacts = [];
-  // void selectContactsTile(
-  //     int index, Contact contact, String groupId, String val,BuiildContex) {
-  //   setState(() {
-  //     if (selectContacts.contains(index)) {
-  //       deleteStringList(groupId, val);
-  //       selectContacts.remove(index);
-  //       selectedContacts.remove(contact);
-  //       // Deselect the contact
-  //       // ref
-  //       //     .read(selectedContactGroups.notifier)
-  //       //     .update((state) => state..remove(contact));
-  //     } else {
-  //       print("❤️❤️❤️❤️❤️");
-  //       selectContacts.add(index);
-  //       selectedContacts.add(contact);
-  //       updateStringInList(groupId, val);
-
-  //       // if (!ref.read(selectedContactGroups).contains(contact)) {
-  //       // ref
-  //       //     .read(selectedContactGroups.notifier)
-  //       //     .update((state) => state..add(contact));
-  //       // }
-  //     }
-  //   });
-  // }
 
   void selectContactsTile(
     int index,
@@ -187,21 +157,12 @@ class _AddGroupContactsState extends ConsumerState<AddGroupContacts> {
                               (user) => user['phoneNumber'] == phoneNumber);
                         }).toList();
 
-                        print('contactsList length: ${contactsList.length}');
-                        print('users length: ${users.length}');
-                        print(
-                            'registeredContacts length: ${registeredContacts.length}');
-
                         return Expanded(
                           child: ListView.builder(
                             shrinkWrap: true,
                             physics: const BouncingScrollPhysics(),
                             itemCount: registeredContacts.length,
                             itemBuilder: (context, index) {
-                              print('index: $index');
-                              print(
-                                  'registeredContacts length: ${registeredContacts.length}');
-
                               final contact = registeredContacts[index];
                               final phoneNumber =
                                   contact.phones[0].number.replaceAll(' ', '');
@@ -212,13 +173,8 @@ class _AddGroupContactsState extends ConsumerState<AddGroupContacts> {
                                   'https://s3.amazonaws.com/37assets/svn/765-default-avatar.png';
                               return InkWell(
                                 onTap: () async {
-                                  print(widget.groupId);
-
-                                  print(user['uid']);
-
                                   selectContactsTile(index, contact,
                                       widget.groupId, user['uid'], context);
-                                  print(contact.displayName);
                                 },
                                 child: ListTile(
                                   trailing: selectContacts.contains(index)

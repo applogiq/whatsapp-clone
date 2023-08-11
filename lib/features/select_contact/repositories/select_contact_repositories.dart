@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -40,10 +42,8 @@ class SelectContactRepository {
           ' ',
           '',
         );
-        //  print(selectedContacts.photo);
-        print(userdata.profilePic);
+
         if (selectedPhoneNum == userdata.phoneNumber) {
-          print("123456");
           isfound = true;
 
           Navigator.push(

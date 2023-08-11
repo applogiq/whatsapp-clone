@@ -1,4 +1,4 @@
-package com.example.whatsapp_uiii
+package app.chatQ
 
 import io.flutter.embedding.android.FlutterActivity
 

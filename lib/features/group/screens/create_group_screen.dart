@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -37,14 +39,9 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   }
 
   Future<File> getAssetFile(String assetPath) async {
-    // Get the app's document directory
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-
-    // Create a unique file name
     String fileName = 'image_${DateTime.now().millisecondsSinceEpoch}.png';
-
-    // Copy the asset to the app's document directory
     File assetFile = File('$appDocPath/$fileName');
     ByteData data = await rootBundle.load(assetPath);
     await assetFile.writeAsBytes(data.buffer.asUint8List());
@@ -55,7 +52,6 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   void createGroup() async {
     try {
       if (groupNameController.text.trim().isNotEmpty && image != null) {
-        print("2");
         ref.read(groupControllerprovider).createGroup(
             context,
             groupNameController.text.trim(),
@@ -67,7 +63,6 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
             MaterialPageRoute(
                 builder: (context) => const MobileLayoutScreen()));
       } else if (groupNameController.text.trim().isNotEmpty && image == null) {
-        print("5");
         ref.read(groupControllerprovider).createGroup(
             context,
             groupNameController.text.trim(),
@@ -80,14 +75,12 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                 builder: (context) => const MobileLayoutScreen()));
       }
     } catch (e) {
-      print(e.toString());
+      showSnackBar(context: context, content: e.toString());
     }
-    print("3");
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     errorText = '';
     setState(() {});
@@ -155,7 +148,6 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                       ],
                     ),
                   ),
-
                   const VerticalBox(height: 12),
                   Align(
                     alignment: Alignment.center,
@@ -166,14 +158,12 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                     ),
                   ),
                   const VerticalBox(height: 24),
-
                   Text(
                     "Enter group name",
                     style: authScreensubTitleStyle()
                         .copyWith(color: const Color.fromRGBO(27, 16, 11, 0.6)),
                   ),
                   const VerticalBox(height: 5),
-
                   SizedBox(
                     width: size.width,
                     child: TextField(
@@ -201,14 +191,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                           isButtonEnable = false;
                           errorText = 'The value is empty';
                           setState(() {});
-                        }
-                        // else if (image == null) {
-                        //   isButtonEnable = false;
-                        //   errorText = 'Select valid image';
-
-                        //   setState(() {});
-                        // }
-                        else {
+                        } else {
                           isButtonEnable = true;
                           errorText = '';
 
@@ -249,24 +232,6 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                     ),
                   ),
                   const Spacer(),
-
-                  // Padding(
-                  //   padding: const EdgeInsets.all(16.0),
-                  //   child: TextField(
-                  //     controller: groupNameController,
-                  //     decoration:
-                  //         const InputDecoration(hintText: 'Enter Group Name'),
-                  //   ),
-                  // ),
-                  // Container(
-                  //   padding: const EdgeInsets.only(left: 16),
-                  //   alignment: Alignment.topLeft,
-                  //   child: const Text(
-                  //     "Select Contacts",
-                  //     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  //   ),
-                  // ),
-                  // const SelectContactsGroups()
                 ],
               ),
             ),

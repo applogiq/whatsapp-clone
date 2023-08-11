@@ -2,67 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+// ignore: unused_element
 const _backgroundColor = Color(0xFF333333);
-
-// class ExampleIsTyping extends StatefulWidget {
-//   const ExampleIsTyping({
-//     super.key,
-//   });
-
-//   @override
-//   State<ExampleIsTyping> createState() => _ExampleIsTypingState();
-// }
-
-// class _ExampleIsTypingState extends State<ExampleIsTyping> {
-//   bool _isSomeoneTyping = false;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: _backgroundColor,
-//       appBar: AppBar(
-//         title: const Text('Typing Indicator'),
-//       ),
-//       body: Column(
-//         children: [
-//           Expanded(
-//             child: ListView.builder(
-//               padding: const EdgeInsets.symmetric(vertical: 8),
-//               itemCount: 25,
-//               reverse: true,
-//               itemBuilder: (context, index) {
-//                 return Padding(
-//                   padding: const EdgeInsets.only(left: 100),
-//                   child: FakeMessage(isBig: index.isOdd),
-//                 );
-//               },
-//             ),
-//           ),
-//           Align(
-//             alignment: Alignment.bottomLeft,
-//             child: TypingIndicator(
-//               showIndicator: _isSomeoneTyping,
-//             ),
-//           ),
-//           Container(
-//             color: Colors.grey,
-//             padding: const EdgeInsets.all(16),
-//             child: Center(
-//               child: CupertinoSwitch(
-//                 onChanged: (newValue) {
-//                   setState(() {
-//                     _isSomeoneTyping = newValue;
-//                   });
-//                 },
-//                 value: _isSomeoneTyping,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class TypingIndicator extends StatefulWidget {
   const TypingIndicator({
@@ -194,22 +135,12 @@ class _TypingIndicatorState extends State<TypingIndicator>
               animation: _smallBubbleAnimation,
               left: 8,
               bottom: 8,
-              bubble: const SizedBox.shrink()
-              // CircleBubble(
-              //   size: 8,
-              //   bubbleColor: widget.bubbleColor,
-              // ),
-              ),
+              bubble: const SizedBox.shrink()),
           AnimatedBubble(
               animation: _mediumBubbleAnimation,
               left: 10,
               bottom: 10,
-              bubble: const SizedBox.shrink()
-              //  CircleBubble(
-              //   size: 16,
-              //   bubbleColor: widget.bubbleColor,
-              // ),
-              ),
+              bubble: const SizedBox.shrink()),
           AnimatedBubble(
             animation: _largeBubbleAnimation,
             left: 12,
